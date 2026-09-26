@@ -1,0 +1,9 @@
+# Working copies left over from building the DAA portal (not part of the site)
+/portal/
+/proj/
+/DAC-Lab-Portal-main/
+/work/
+
+# Local tooling config
+.claude/
+__pycache__/

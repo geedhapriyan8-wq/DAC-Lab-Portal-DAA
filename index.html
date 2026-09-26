@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | DAC Lab Portal</title>
+  <meta name="description" content="Sign in to the DAC Lab Portal to access your DSA or Data Analytics Academy labs, track your progress, and earn badges.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/daa-theme.css">
+</head>
+<body class="theme-daa">
+  <div class="animated-bg"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="auth-page" role="main">
+    <!-- Decorative orbs -->
+    <div class="auth-orb auth-orb-1" aria-hidden="true"></div>
+    <div class="auth-orb auth-orb-2" aria-hidden="true"></div>
+
+    <div class="auth-container">
+      <div class="glass-card auth-card">
+        <!-- Highlighted Centered Brand -->
+        <div class="auth-brand-centered">
+          <div class="brand-logo-glow" aria-hidden="true">📊</div>
+          <h1 class="brand-portal-title">DAC Lab Portal</h1>
+          <span class="brand-portal-sub">DSA and Data Analytics Academy learning platform</span>
+        </div>
+
+        <!-- Header -->
+        <div class="auth-header">
+          <h2 class="auth-title">Welcome</h2>
+          <p class="auth-subtitle">Sign in to your account to continue your learning journey.</p>
+        </div>
+
+        <!-- Alert (shown on error) -->
+        <div id="login-alert" class="auth-alert error" style="display:none" role="alert">
+          <span aria-hidden="true">⚠️</span>
+          <span id="login-alert-msg"></span>
+        </div>
+
+        <!-- Login Form -->
+        <form class="auth-form" id="login-form" novalidate autocomplete="on">
+          <div class="form-group">
+            <label class="form-label" for="login-userid">User ID</label>
+            <div class="input-wrap">
+              <span class="input-icon" aria-hidden="true">👤</span>
+              <input
+                type="text"
+                id="login-userid"
+                name="username"
+                class="form-input"
+                placeholder="Enter your user ID"
+                autocomplete="username"
+                autocapitalize="none"
+                spellcheck="false"
+                required
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon" aria-hidden="true">🔑</span>
+              <input
+                type="password"
+                id="login-password"
+                name="current-password"
+                class="form-input"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              >
+              <button type="button" class="input-toggle" id="toggle-pwd" aria-label="Toggle password visibility">👁</button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="login-btn">
+            <span class="btn-text">Sign In →</span>
+            <span class="btn-loader" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="auth-footer">
+          Don't have an account?
+          <a href="register.html" id="go-register-link">Create one here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Redirect if already logged in
+    Auth.requireGuest();
+
+    const form     = document.getElementById('login-form');
+    const alertEl  = document.getElementById('login-alert');
+    const alertMsg = document.getElementById('login-alert-msg');
+    const togglePwd = document.getElementById('toggle-pwd');
+    const pwdInput  = document.getElementById('login-password');
+
+    function showAlert(msg) {
+      alertEl.style.display = 'flex';
+      alertMsg.textContent  = msg;
+    }
+
+    togglePwd.addEventListener('click', () => {
+      const show = pwdInput.type === 'password';
+      pwdInput.type = show ? 'text' : 'password';
+      togglePwd.textContent = show ? '🙈' : '👁';
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertEl.style.display = 'none';
+
+      const userId   = document.getElementById('login-userid').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn      = document.getElementById('login-btn');
+
+      if (!userId || !password) {
+        showAlert('Please fill in all fields.');
+        return;
+      }
+
+      UI.setLoading(btn, true);
+      await new Promise(r => setTimeout(r, 400));
+
+      const result = await Auth.login(userId, password);
+
+      if (result.ok) {
+        UI.showToast({ type: 'success', title: 'Welcome!', message: `Signed in as @${userId}` });
+        setTimeout(() => { window.location.href = result.home; }, 600);
+      } else {
+        UI.setLoading(btn, false);
+        showAlert(result.message);
+        document.getElementById('login-password').value = '';
+        document.getElementById('login-password').focus();
+      }
+    });
+
+    // Keyboard: press Enter
+    document.getElementById('login-userid').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') document.getElementById('login-password').focus();
+    });
+  </script>
+</body>
+</html>
