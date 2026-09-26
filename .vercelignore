@@ -1,2 +1,4 @@
 tools/
+tests/
 .claude/
+.dev-db/

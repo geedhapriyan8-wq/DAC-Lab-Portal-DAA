@@ -1,18 +1,29 @@
-# DAA lab tooling
+# Maintainer tools
 
-The Data Analytics Academy (DAA) section lives in `daa/` (pages, datasets, charts) and
-`js/daa/` (logic and lab content). This folder is excluded from Vercel deploys via `.vercelignore`.
+Everything Vercel serves is in `public/`. The API is in `api/` and `lib/`. This folder is not deployed.
 
-## How DAA labs are structured
+## Quiz answers (`quiz-keys.mjs`)
 
-- `js/daa/daa-progress.js`: the curriculum (topics, lab titles, levels) and progress/badge logic.
-- `js/daa/labs/daa-NN-*.js`: one file per topic; each lab is `window.DAA_LAB_DATA['daa-NN_labN']`.
+Quiz answers are kept on the server in `lib/quiz-keys.js`, so students can't read them in the
+browser. To add or change a quiz:
+
+1. Write it in the lab file as usual, with `answer: N` (0-based option index) on every question.
+2. Run `node tools/quiz-keys.mjs`.
+
+The script copies the answers into `lib/quiz-keys.js` and removes them from the lab file. If you edit
+a quiz that has no answers in the lab file (already moved), keep the same number of questions or add
+`answer:` to every question again. The script refuses to run otherwise.
+
+## DAA labs
+
+- `public/js/daa/daa-progress.js`: the curriculum (topics, lab titles, levels) and badge display.
+- `public/js/daa/labs/daa-NN-*.js`: one file per topic; each lab is `window.DAA_LAB_DATA['daa-NN_labN']`.
 - A code block with `run: true` is executed by the build script below, and its real output
   (text and charts) is shown when students click "Show Output". Add `expectError: true` for
   cells that are meant to raise an error.
-- `js/daa/labs/daa-outputs.js` and `daa/img/*.png` are generated. Don't edit them by hand.
+- `public/js/daa/labs/daa-outputs.js` and `public/daa/img/*.png` are generated. Don't edit them by hand.
 
-## Regenerate expected outputs
+### Regenerate expected outputs
 
 Run this after changing any lab code or dataset:
 
@@ -24,8 +35,7 @@ node tools/build-daa-outputs.mjs python
 pandas is pinned to 2.x so text output matches Google Colab. The web-scraping lab fetches live
 pages, so its outputs change from run to run. The script exits with an error if any cell fails.
 
-## Programme gate
+## Local preview (`dev-server.mjs`)
 
-Each account stores `program: 'dsa' | 'daa'` (chosen at registration). `Auth.requireAuth(program, root)`
-sends students from the other programme to their own dashboard. Accounts without a programme are
-treated as DSA. To move a student between programmes, change `program` on their account record.
+`npm run dev` serves the site and API at http://localhost:5173 with a local database in `.dev-db/`.
+The User ID `admin` is an admin locally; set `ADMIN_USER_IDS` to change that.

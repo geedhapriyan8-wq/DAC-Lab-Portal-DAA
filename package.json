@@ -1,0 +1,19 @@
+{
+  "name": "dac-lab-portal",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "node tools/dev-server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "quiz-keys": "node tools/quiz-keys.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8"
+  }
+}
