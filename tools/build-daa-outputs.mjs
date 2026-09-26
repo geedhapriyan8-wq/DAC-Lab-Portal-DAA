@@ -3,12 +3,12 @@
 //
 //   node tools/build-daa-outputs.mjs [python-exe]
 //
-// 1. Loads every js/daa/labs/daa-*.js file in a sandbox.
+// 1. Loads every public/js/daa/labs/daa-*.js file in a sandbox.
 // 2. Collects the code cells marked `run: true`, in lab order.
 // 3. Runs each lab's cells in one Python namespace (like a Colab
-//    notebook) from daa/datasets/, via tools/run_cells.py.
-// 4. Writes js/daa/labs/daa-outputs.js (text output per cell) and
-//    daa/img/*.png (any charts the cells draw).
+//    notebook) from public/daa/datasets/, via tools/run_cells.py.
+// 4. Writes public/js/daa/labs/daa-outputs.js (text output per cell) and
+//    public/daa/img/*.png (any charts the cells draw).
 // Re-run this whenever lab code or datasets change.
 // ============================================================
 import fs from 'node:fs';
@@ -18,7 +18,8 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const root    = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const labsDir = path.join(root, 'js', 'daa', 'labs');
+const site    = path.join(root, 'public');   // everything Vercel serves
+const labsDir = path.join(site, 'js', 'daa', 'labs');
 const python  = process.argv[2] || 'python';
 
 const sandbox = { window: {} };
@@ -42,7 +43,7 @@ for (const [key, lab] of Object.entries(labs)) {
 
 const jobFile = path.join(root, 'tools', '.cells.json');
 fs.writeFileSync(jobFile, JSON.stringify(jobs));
-const out = execFileSync(python, [path.join(root, 'tools', 'run_cells.py'), jobFile, root],
+const out = execFileSync(python, [path.join(root, 'tools', 'run_cells.py'), jobFile, site],
   { maxBuffer: 64 * 1024 * 1024, encoding: 'utf8' });
 fs.unlinkSync(jobFile);
 

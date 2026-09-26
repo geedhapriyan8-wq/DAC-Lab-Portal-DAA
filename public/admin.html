@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin | DAC Lab Portal</title>
+  <meta name="description" content="Manage DAC Lab Portal students: programmes, passwords and progress.">
+  <meta name="robots" content="noindex">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/daa-theme.css">
+  <style>
+    .admin-page { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: var(--space-6) var(--space-4) var(--space-12); }
+    .admin-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); flex-wrap: wrap; margin-bottom: var(--space-6); }
+    .admin-brand { display: flex; align-items: center; gap: var(--space-3); }
+    .admin-brand-icon { font-size: 1.8rem; }
+    .admin-brand h1 { font-family: var(--font-heading); font-size: 1.4rem; margin: 0; }
+    .admin-brand p { margin: 0; color: var(--color-text-muted); font-size: 0.85rem; }
+    .admin-header-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+    .admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6); }
+    .admin-stat { padding: var(--space-4) var(--space-5); }
+    .admin-stat-value { font-family: var(--font-heading); font-size: 1.8rem; font-weight: 700; }
+    .admin-stat-label { color: var(--color-text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .admin-toolbar { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-4); }
+    .admin-toolbar .form-input { flex: 1 1 240px; padding-left: var(--space-4); }
+    .admin-toolbar select.form-input { flex: 0 0 auto; width: auto; }
+
+    .admin-table-wrap { overflow-x: auto; padding: 0; }
+    .admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    .admin-table th, .admin-table td { padding: var(--space-3) var(--space-4); text-align: left; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+    .admin-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-muted); font-weight: 600; white-space: nowrap; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .student-name { font-weight: 600; }
+    .student-id { color: var(--color-text-muted); font-size: 0.8rem; font-family: var(--font-mono); }
+    .chip { display: inline-block; padding: 1px 8px; border-radius: var(--radius-full); font-size: 0.7rem; font-weight: 700; margin-left: 6px; vertical-align: middle; }
+    .chip-admin { background: rgba(34,197,94,0.15); color: var(--color-primary-light); }
+    .chip-warn  { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .program-select { padding: 4px 8px; border-radius: var(--radius-md); background: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); font: inherit; }
+    .mini-progress { display: flex; align-items: center; gap: var(--space-2); min-width: 140px; }
+    .mini-progress .progress-bar-wrap { flex: 1; height: 6px; }
+    .mini-progress span { font-size: 0.8rem; white-space: nowrap; color: var(--color-text-secondary); }
+    .row-actions { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+    .row-actions .btn { padding: 4px 10px; font-size: 0.78rem; }
+    .muted { color: var(--color-text-muted); }
+
+    .detail-row td { background: rgba(255,255,255,0.02); }
+    .detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-2) var(--space-6); }
+    .detail-topic { font-size: 0.85rem; }
+    .detail-topic strong { display: block; margin-bottom: 2px; }
+    .detail-lab { color: var(--color-text-secondary); font-size: 0.8rem; }
+    .detail-lab.done { color: var(--color-primary-light); }
+
+    dialog.admin-dialog { margin: auto; border: 1px solid var(--color-border); border-radius: var(--radius-xl); background: var(--color-surface); color: var(--color-text); padding: var(--space-6); max-width: 440px; width: calc(100% - 32px); }
+    dialog.admin-dialog::backdrop { background: rgba(0,0,0,0.6); }
+    dialog.admin-dialog h2 { margin: 0 0 var(--space-3); font-family: var(--font-heading); font-size: 1.15rem; }
+    dialog.admin-dialog p { color: var(--color-text-secondary); font-size: 0.9rem; }
+    .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-5); }
+    .temp-password { font-family: var(--font-mono); font-size: 1.3rem; letter-spacing: 0.05em; padding: var(--space-3); text-align: center; border: 1px dashed var(--color-primary); border-radius: var(--radius-md); margin: var(--space-3) 0; user-select: all; }
+    .empty-state { padding: var(--space-10); text-align: center; color: var(--color-text-muted); }
+
+    @media (max-width: 720px) {
+      .admin-table thead { display: none; }
+      .admin-table, .admin-table tbody, .admin-table tr, .admin-table td { display: block; width: 100%; }
+      .admin-table tr { border-bottom: 1px solid var(--color-border); padding: var(--space-2) 0; }
+      .admin-table td { border: none; padding: var(--space-1) var(--space-4); }
+      .admin-table td[data-label]::before { content: attr(data-label); display: block; font-size: 0.7rem; text-transform: uppercase; color: var(--color-text-muted); }
+    }
+  </style>
+</head>
+<body class="theme-daa">
+  <div class="animated-bg"></div>
+  <div class="grid-overlay"></div>
+
+  <main class="admin-page">
+    <header class="admin-header">
+      <div class="admin-brand">
+        <span class="admin-brand-icon" aria-hidden="true">🛠️</span>
+        <div>
+          <h1>Admin</h1>
+          <p>DAC Lab Portal · signed in as <span id="admin-self"></span></p>
+        </div>
+      </div>
+      <div class="admin-header-actions">
+        <a class="btn btn-secondary btn-sm" id="my-dashboard-link" href="index.html">← My dashboard</a>
+        <button class="btn btn-secondary btn-sm" id="logout-btn" type="button">🚪 Log out</button>
+      </div>
+    </header>
+
+    <section class="admin-stats" aria-label="Summary">
+      <div class="glass-card admin-stat"><div class="admin-stat-value" id="stat-total">–</div><div class="admin-stat-label">Students</div></div>
+      <div class="glass-card admin-stat"><div class="admin-stat-value" id="stat-dsa">–</div><div class="admin-stat-label">DSA</div></div>
+      <div class="glass-card admin-stat"><div class="admin-stat-value" id="stat-daa">–</div><div class="admin-stat-label">DAA</div></div>
+      <div class="glass-card admin-stat"><div class="admin-stat-value" id="stat-master">–</div><div class="admin-stat-label">Master badges</div></div>
+    </section>
+
+    <div class="admin-toolbar">
+      <input type="search" class="form-input" id="search" placeholder="Search by name or user ID" aria-label="Search students">
+      <select class="form-input" id="program-filter" aria-label="Filter by programme">
+        <option value="">All programmes</option>
+        <option value="dsa">DSA only</option>
+        <option value="daa">DAA only</option>
+      </select>
+      <button class="btn btn-secondary" id="refresh-btn" type="button">↻ Refresh</button>
+    </div>
+
+    <div class="glass-card admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Programme</th>
+            <th>Progress</th>
+            <th>Badges</th>
+            <th>Last active</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="students-body">
+          <tr><td colspan="6" class="empty-state">Loading students…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Temporary password -->
+  <dialog class="admin-dialog" id="temp-password-dialog">
+    <h2>Temporary password</h2>
+    <p id="temp-password-for"></p>
+    <div class="temp-password" id="temp-password-value"></div>
+    <p>Give this to the student privately. It won't be shown again. When they sign in with it, they must choose a new password.</p>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" type="button" id="copy-temp-btn">📋 Copy</button>
+      <button class="btn btn-primary" type="button" id="close-temp-btn">Done</button>
+    </div>
+  </dialog>
+
+  <!-- Confirmations -->
+  <dialog class="admin-dialog" id="confirm-dialog">
+    <h2 id="confirm-title"></h2>
+    <p id="confirm-text"></p>
+    <div class="form-group" id="confirm-type-group" style="display:none">
+      <label class="form-label" for="confirm-type-input" id="confirm-type-label"></label>
+      <input class="form-input" id="confirm-type-input" autocomplete="off" style="padding-left:var(--space-4)">
+    </div>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" type="button" id="confirm-cancel">Cancel</button>
+      <button class="btn btn-primary" type="button" id="confirm-ok"></button>
+    </div>
+  </dialog>
+
+  <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/progress.js"></script>
+  <script src="js/daa/daa-progress.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | DAC Lab Portal</title>
+  <meta name="description" content="Create your DAC Lab Portal account and join the DSA or Data Analytics Academy programme.">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/daa-theme.css">
+</head>
+<body class="theme-daa">
+  <div class="animated-bg"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="auth-page" role="main">
+    <a href="index.html" class="back-btn" aria-label="Back to login">← Back to Login</a>
+
+    <div class="auth-orb auth-orb-1" aria-hidden="true"></div>
+    <div class="auth-orb auth-orb-2" aria-hidden="true"></div>
+
+    <div class="auth-container" style="max-width:480px">
+      <div class="glass-card auth-card">
+        <!-- Highlighted Centered Brand -->
+        <div class="auth-brand-centered">
+          <div class="brand-logo-glow" aria-hidden="true">📊</div>
+          <h1 class="brand-portal-title">DAC Lab Portal</h1>
+          <span class="brand-portal-sub">DSA and Data Analytics Academy learning platform</span>
+        </div>
+
+        <div class="auth-header">
+          <h2 class="auth-title" style="color:#000000;-webkit-text-fill-color:#000000">Create Account</h2>
+          <p class="auth-subtitle">Choose your own User ID and password. Your progress will be saved automatically.</p>
+        </div>
+
+        <div id="reg-alert" class="auth-alert" style="display:none" role="alert">
+          <span aria-hidden="true" id="reg-alert-icon">⚠️</span>
+          <span id="reg-alert-msg"></span>
+        </div>
+
+        <form class="auth-form" id="register-form" novalidate autocomplete="off">
+          <!-- Programme (the 2-way gate) -->
+          <fieldset class="form-group" style="border:0;padding:0;margin:0">
+            <legend class="form-label">Choose your programme</legend>
+            <div class="program-choice" role="radiogroup">
+              <label class="program-card dsa" id="program-card-dsa">
+                <input type="radio" name="program" value="dsa" id="program-dsa">
+                <span class="program-card-icon" aria-hidden="true">🧬</span>
+                <span class="program-card-name">DSA Lab Portal</span>
+                <span class="program-card-desc">AI and machine learning labs · 11 topics</span>
+              </label>
+              <label class="program-card daa" id="program-card-daa">
+                <input type="radio" name="program" value="daa" id="program-daa">
+                <span class="program-card-icon" aria-hidden="true">📊</span>
+                <span class="program-card-name">Data Analytics Academy</span>
+                <span class="program-card-desc">Data analytics labs · 9 topics</span>
+              </label>
+            </div>
+            <p class="program-note">Your programme is fixed once your account is created. If you pick the wrong one, ask an admin to change it.</p>
+          </fieldset>
+
+          <!-- Display Name -->
+          <div class="form-group">
+            <label class="form-label" for="reg-name">Display Name</label>
+            <div class="input-wrap">
+              <span class="input-icon" aria-hidden="true">✏️</span>
+              <input
+                type="text"
+                id="reg-name"
+                class="form-input"
+                placeholder="Your full name or nickname"
+                autocomplete="name"
+                required
+              >
+            </div>
+          </div>
+
+          <!-- User ID -->
+          <div class="form-group">
+            <label class="form-label" for="reg-userid">
+              User ID
+              <span class="text-muted text-xs" style="font-weight:400;margin-left:0.4rem">(used to log in)</span>
+            </label>
+            <div class="input-wrap">
+              <span class="input-icon" aria-hidden="true">@</span>
+              <input
+                type="text"
+                id="reg-userid"
+                class="form-input"
+                placeholder="e.g. student123 or john.doe"
+                autocomplete="username"
+                autocapitalize="none"
+                spellcheck="false"
+                pattern="[a-z0-9_.\-]+"
+                required
+              >
+            </div>
+            <ul class="requirements-list" id="userid-reqs">
+              <li class="req-item" id="req-uid-len">  <span class="req-dot">●</span> At least 3 characters</li>
+              <li class="req-item" id="req-uid-chars"><span class="req-dot">●</span> Only letters, numbers, dots, hyphens, underscores</li>
+            </ul>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            <label class="form-label" for="reg-password">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon" aria-hidden="true">🔑</span>
+              <input
+                type="password"
+                id="reg-password"
+                class="form-input"
+                placeholder="Create a strong password"
+                autocomplete="new-password"
+                required
+              >
+              <button type="button" class="input-toggle" id="toggle-reg-pwd" aria-label="Toggle password visibility">👁</button>
+            </div>
+            <!-- Strength meter -->
+            <div class="password-strength">
+              <div class="strength-bars" aria-hidden="true">
+                <div class="strength-bar" id="sb-1"></div>
+                <div class="strength-bar" id="sb-2"></div>
+                <div class="strength-bar" id="sb-3"></div>
+                <div class="strength-bar" id="sb-4"></div>
+              </div>
+              <span class="strength-text" id="strength-text">Enter a password</span>
+            </div>
+            <ul class="requirements-list" id="pwd-reqs">
+              <li class="req-item" id="req-len">  <span class="req-dot">●</span> At least 8 characters</li>
+              <li class="req-item" id="req-upper"><span class="req-dot">●</span> At least one uppercase letter</li>
+              <li class="req-item" id="req-num">  <span class="req-dot">●</span> At least one number</li>
+              <li class="req-item" id="req-sym">  <span class="req-dot">●</span> At least one special character (recommended)</li>
+            </ul>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label class="form-label" for="reg-confirm">Confirm Password</label>
+            <div class="input-wrap">
+              <span class="input-icon" aria-hidden="true">🔒</span>
+              <input
+                type="password"
+                id="reg-confirm"
+                class="form-input"
+                placeholder="Repeat your password"
+                autocomplete="new-password"
+                required
+              >
+            </div>
+            <div class="form-error" id="confirm-error" style="display:none">❌ Passwords do not match</div>
+          </div>
+
+          <!-- Terms -->
+          <label class="custom-checkbox" for="terms-check">
+            <input type="checkbox" id="terms-check" required>
+            <span>I agree that my account details and lab progress are stored on the DAC Lab Portal server.</span>
+          </label>
+
+          <button type="submit" class="btn btn-primary btn-full btn-lg" id="register-btn">
+            <span class="btn-text">Create My Account →</span>
+            <span class="btn-loader" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div class="auth-footer">
+          Already have an account?
+          <a href="index.html">Sign in here</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    // Signed in already: go to the dashboard.
+    Auth.requireGuest().then(session => {
+      if (session && session.mustChangePassword) window.location.href = 'index.html';
+    });
+
+    const form       = document.getElementById('register-form');
+    const alertEl    = document.getElementById('reg-alert');
+    const alertMsg   = document.getElementById('reg-alert-msg');
+    const alertIcon  = document.getElementById('reg-alert-icon');
+    const pwdInput   = document.getElementById('reg-password');
+    const confirmEl  = document.getElementById('reg-confirm');
+    const uidInput   = document.getElementById('reg-userid');
+
+    function showAlert(msg, type = 'error') {
+      alertEl.className    = `auth-alert ${type}`;
+      alertIcon.textContent = type === 'error' ? '⚠️' : '✅';
+      alertMsg.textContent = msg;
+      alertEl.style.display = 'flex';
+    }
+
+    // Toggle password visibility
+    document.getElementById('toggle-reg-pwd').addEventListener('click', () => {
+      const show = pwdInput.type === 'password';
+      pwdInput.type = show ? 'text' : 'password';
+      document.getElementById('toggle-reg-pwd').textContent = show ? '🙈' : '👁';
+    });
+
+    // Password strength meter
+    pwdInput.addEventListener('input', () => {
+      const val = pwdInput.value;
+      const str = UI.checkPasswordStrength(val);
+      const bars = [
+        document.getElementById('sb-1'),
+        document.getElementById('sb-2'),
+        document.getElementById('sb-3'),
+        document.getElementById('sb-4'),
+      ];
+      bars.forEach((b, i) => {
+        b.className = 'strength-bar';
+        if (val.length > 0 && i < str.score) b.classList.add(`active-${str.level}`);
+      });
+      const txt = document.getElementById('strength-text');
+      txt.textContent = val.length === 0 ? 'Enter a password' : `Strength: ${str.label}`;
+      txt.style.color = { weak:'#ef4444', fair:'#f59e0b', good:'#6366f1', strong:'#10b981' }[str.level] || '#64748b';
+
+      // Requirements
+      document.getElementById('req-len').classList.toggle('met', val.length >= 8);
+      document.getElementById('req-upper').classList.toggle('met', /[A-Z]/.test(val));
+      document.getElementById('req-num').classList.toggle('met', /[0-9]/.test(val));
+      document.getElementById('req-sym').classList.toggle('met', /[^A-Za-z0-9]/.test(val));
+    });
+
+    // User ID live validation
+    uidInput.addEventListener('input', () => {
+      const v = uidInput.value.toLowerCase();
+      uidInput.value = v;
+      document.getElementById('req-uid-len').classList.toggle('met', v.length >= 3);
+      document.getElementById('req-uid-chars').classList.toggle('met', /^[a-z0-9_.\-]*$/.test(v) && v.length > 0);
+    });
+
+    // Confirm password live check
+    confirmEl.addEventListener('input', () => {
+      const match = confirmEl.value === pwdInput.value;
+      document.getElementById('confirm-error').style.display = (confirmEl.value.length > 0 && !match) ? 'flex' : 'none';
+    });
+
+    // Programme cards: highlight the chosen one
+    const programInputs = document.querySelectorAll('input[name="program"]');
+    programInputs.forEach(input => {
+      input.addEventListener('change', () => {
+        document.querySelectorAll('.program-card').forEach(c => c.classList.remove('selected'));
+        input.closest('.program-card').classList.add('selected');
+      });
+    });
+
+    // Form submit
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      alertEl.style.display = 'none';
+
+      const name     = document.getElementById('reg-name').value.trim();
+      const userId   = uidInput.value.trim().toLowerCase();
+      const password = pwdInput.value;
+      const confirm  = confirmEl.value;
+      const agreed   = document.getElementById('terms-check').checked;
+      const programEl = document.querySelector('input[name="program"]:checked');
+      const program  = programEl ? programEl.value : '';
+      const btn      = document.getElementById('register-btn');
+
+      if (!program) {
+        showAlert('Choose your programme: DSA or Data Analytics Academy.'); return;
+      }
+      if (!name || !userId || !password || !confirm) {
+        showAlert('Please fill in all fields.'); return;
+      }
+      if (password !== confirm) {
+        showAlert('Passwords do not match.'); return;
+      }
+      if (!agreed) {
+        showAlert('Please agree to the storage terms.'); return;
+      }
+
+      UI.setLoading(btn, true);
+      await new Promise(r => setTimeout(r, 500));
+
+      const result = await Auth.register(userId, password, name, program);
+
+      if (result.ok) {
+        showAlert(`Account created! Redirecting to login...`, 'success');
+        UI.showToast({ type: 'success', title: 'Account Created!', message: `Welcome, ${name}! Please sign in.` });
+        setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+      } else {
+        UI.setLoading(btn, false);
+        showAlert(result.message);
+      }
+    });
+  </script>
+</body>
+</html>

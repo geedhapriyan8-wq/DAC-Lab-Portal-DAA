@@ -7,3 +7,7 @@
 # Local tooling config
 .claude/
 __pycache__/
+
+# Dependencies and the local development database
+node_modules/
+.dev-db/
