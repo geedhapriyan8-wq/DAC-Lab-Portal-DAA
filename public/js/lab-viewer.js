@@ -216,7 +216,7 @@ async function initLabViewer() {
               <span class="terminal-dot dot-yellow"></span>
               <span class="terminal-dot dot-green"></span>
             </div>
-            <span class="executor-lang-title">🐍 ${lang.toUpperCase()} INTERACTIVE TERMINAL</span>
+            <span class="executor-lang-title">🐍 ${lang.toUpperCase()} · VS CODE & INTERACTIVE TERMINAL</span>
           </div>
           <div class="executor-actions">
             <button class="code-copy-btn btn" type="button" style="font-size:0.75rem">📋 Copy</button>

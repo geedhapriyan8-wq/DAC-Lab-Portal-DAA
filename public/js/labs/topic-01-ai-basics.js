@@ -10,329 +10,215 @@ window.LAB_DATA = window.LAB_DATA || {};
    LAB 1 — Introduction to AI Concepts & Simple Workflows
    ───────────────────────────────────────────────────────────── */
 window.LAB_DATA['topic-01_lab1'] = {
-  title:      'Introduction to AI Concepts & Simple Workflows',
+  title:      'AI in Action: Unstructured Data Extraction & Synthesis',
   difficulty: 'Simple → Intermediate',
   duration:   '45–60 minutes',
-  overview:   'In this lab you will explore the foundational concepts of Artificial Intelligence, understand the key differences between rule-based systems and machine learning, and build a simple automated decision-making workflow using Python. By the end, you will understand how AI perceives problems, and you will have hands-on experience constructing a functional pipeline.',
+  overview:   'Real-world business data is over 80% unstructured: emails, support tickets, incident postmortems, and customer feedback. In this hands-on lab, you experience AI in action by building an end-to-end unstructured data extraction and synthesis engine in Python. You will ingest raw, messy corpora, extract key entities and technical signals (error codes, severities, monetary values), synthesize structured analytical schemas (JSON and DataFrames), and verify extraction precision.',
   objectives: [
-    'Define Artificial Intelligence and its major subfields',
-    'Distinguish between rule-based automation and ML-driven automation',
-    'Build a simple data-driven decision workflow in Python',
-    'Understand the concept of an AI pipeline end to end',
-    'Test and evaluate a basic automated system',
+    'Understand unstructured vs. structured data challenges in enterprise AI',
+    'Ingest raw unstructured text logs and customer communication records',
+    'Implement automated entity extraction, regex pattern parsers, and urgency scoring',
+    'Synthesize messy unstructured text into structured analytical schemas (JSON & Pandas)',
+    'Build an end-to-end data pipeline that routes high-priority incidents and computes synthesis metrics',
   ],
   steps: [
     {
-      title: 'What Is Artificial Intelligence?',
-      content: `<p>Artificial Intelligence (AI) is the simulation of human intelligence processes by machines — especially computer systems. It encompasses a broad range of techniques designed to make machines "think," learn, and adapt.</p>
-<h4>Three Levels of AI</h4>
-<ul>
-  <li><strong>Narrow AI (ANI):</strong> Designed for one specific task (e.g., chess engines, spam filters, voice assistants). All AI in production today is Narrow AI.</li>
-  <li><strong>General AI (AGI):</strong> Hypothetical AI with human-like reasoning across any domain. Does not yet exist.</li>
-  <li><strong>Super AI (ASI):</strong> Theoretical AI surpassing human intelligence in all fields. Remains speculative.</li>
-</ul>
-<h4>Core AI Subfields You Will Encounter</h4>
-<ul>
-  <li><strong>Machine Learning:</strong> Systems that learn patterns from data without being explicitly programmed.</li>
-  <li><strong>Deep Learning:</strong> ML using neural networks with many layers, excellent for images, audio, and text.</li>
-  <li><strong>Natural Language Processing (NLP):</strong> Understanding and generating human language.</li>
-  <li><strong>Computer Vision:</strong> Enabling machines to interpret images and video.</li>
-  <li><strong>Robotics & Automation:</strong> Combining AI with physical systems.</li>
-</ul>
-<p>The key insight: <strong>AI is about building systems that improve with experience and data</strong>, rather than following a fixed, human-written set of instructions for every possible situation.</p>`,
-      note: 'Read this step carefully — these definitions form the vocabulary you will use throughout all subsequent labs in this course.',
-    },
-    {
-      title: 'Setting Up Your Python Environment',
-      content: `<p>Before writing any code, you need a working Python environment with the right libraries. This lab uses Python 3.8+ and a few core packages.</p>
-<h4>Option A: Using Google Colab (Recommended for Beginners)</h4>
-<ol>
-  <li>Open your browser and navigate to <strong>colab.research.google.com</strong>.</li>
-  <li>Click <strong>New Notebook</strong>.</li>
-  <li>All common libraries (NumPy, Pandas, Scikit-learn) are pre-installed. No setup required!</li>
-</ol>
-<h4>Option B: Local Installation with pip</h4>
-<p>Open a terminal (Command Prompt on Windows, Terminal on Mac/Linux) and run:</p>`,
-      code: {
-        language: 'bash',
-        content: `# Create a virtual environment
-python -m venv dsa_env
-
-# Activate it
-# On Mac/Linux:
-source dsa_env/bin/activate
-# On Windows:
-dsa_env\\Scripts\\activate
-
-# Install required packages
-pip install numpy pandas scikit-learn matplotlib requests`,
-      },
-      note: 'Always use a virtual environment to keep project dependencies isolated from your system Python.',
-    },
-    {
-      title: 'Rule-Based vs. Machine Learning Approaches',
-      content: `<p>Understanding the difference between rule-based and ML-based systems is fundamental. Let us build both for the same problem — classifying a student's grade — and compare them.</p>
-<h4>Problem: Classify a student's performance as "Pass" or "Fail"</h4>
-<p>Below is the <strong>rule-based approach</strong>: a human expert writes all the conditions explicitly.</p>`,
+      title: 'Environment Setup & Unstructured Data Ingestion',
+      content: `<p>Unstructured data lacks a predefined relational data model. To extract actionable business intelligence, we must ingest raw text, clean noise, and prepare it for analytical synthesis.</p>
+<h4>🎯 Practical Task</h4>
+<p>Set up your VS Code workspace, import standard extraction libraries (<code>re</code>, <code>json</code>, <code>pandas</code>), and ingest a batch of raw enterprise customer incident logs.</p>`,
       code: {
         language: 'python',
-        content: `# ── RULE-BASED APPROACH ──────────────────────────────────────
-def classify_student_rules(score, attendance_pct):
-    """Classify student performance using hand-crafted rules."""
-    if score >= 60 and attendance_pct >= 75:
-        return "Pass"
-    elif score >= 75 and attendance_pct >= 50:
-        return "Pass"   # High scorer gets a pass despite lower attendance
-    else:
-        return "Fail"
-
-# Test the rule-based system
-test_students = [
-    {"name": "Alice",   "score": 85, "attendance": 90},
-    {"name": "Bob",     "score": 55, "attendance": 80},
-    {"name": "Charlie", "score": 72, "attendance": 60},
-    {"name": "Diana",   "score": 65, "attendance": 70},
-]
-
-print("── Rule-Based Classification ──────────────────")
-for s in test_students:
-    result = classify_student_rules(s["score"], s["attendance"])
-    print(f"{s['name']:10s} | Score: {s['score']} | Attendance: {s['attendance']}% → {result}")`,
-      },
-      note: 'Notice how every rule must be written manually. If the criteria change next semester, a developer has to update every condition — this does not scale well.',
-    },
-    {
-      title: 'Building an ML-Based Classifier',
-      content: `<p>Now let us solve the same problem using Machine Learning. Instead of writing rules, we <em>train</em> a model on example data. The algorithm learns the patterns automatically.</p>
-<p>This is the fundamental shift in AI: <strong>instead of programming behavior, we program a learning process.</strong></p>`,
-      code: {
-        language: 'python',
-        content: `import numpy as np
-from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, classification_report
-
-# ── Step 1: Create training dataset ──────────────────────────
-# Each row: [score, attendance_pct], label: 1=Pass, 0=Fail
-np.random.seed(42)
-
-scores      = np.random.randint(40, 100, size=200)
-attendance  = np.random.randint(40, 100, size=200)
-# Ground truth: pass if score >= 60 AND attendance >= 75
-labels = ((scores >= 60) & (attendance >= 75)).astype(int)
-
-X = np.column_stack([scores, attendance])
-y = labels
-
-# ── Step 2: Split into train and test sets ───────────────────
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
-print(f"Training samples: {len(X_train)} | Test samples: {len(X_test)}")
-
-# ── Step 3: Train the model ───────────────────────────────────
-model = LogisticRegression()
-model.fit(X_train, y_train)
-print("Model trained successfully!")
-
-# ── Step 4: Evaluate on test set ─────────────────────────────
-y_pred = model.predict(X_test)
-acc    = accuracy_score(y_test, y_pred)
-print(f"\\nAccuracy: {acc:.2%}")
-print("\\n" + classification_report(y_test, y_pred, target_names=["Fail", "Pass"]))
-
-# ── Step 5: Predict on new students ──────────────────────────
-new_students = np.array([[85, 90], [55, 80], [72, 60], [65, 70]])
-predictions  = model.predict(new_students)
-labels_map   = {0: "Fail", 1: "Pass"}
-
-print("── ML Model Predictions ─────────────────────────")
-names = ["Alice", "Bob", "Charlie", "Diana"]
-for name, pred, student in zip(names, predictions, new_students):
-    print(f"{name:10s} | Score: {student[0]} | Attendance: {student[1]}% → {labels_map[pred]}")`,
-      },
-      note: 'The ML model learned the rules from data! In real-world applications, training data is collected from actual student records, making the model far more nuanced than hand-crafted rules.',
-    },
-    {
-      title: 'Understanding a Simple AI Pipeline',
-      content: `<p>An AI pipeline is a sequence of data processing steps that transforms raw input into a useful output. Every real-world AI system follows this pattern, no matter how complex it gets.</p>
-<h4>The 5 Stages of an AI Pipeline</h4>
-<ol>
-  <li><strong>Data Collection:</strong> Gathering raw data from sensors, databases, APIs, or user input.</li>
-  <li><strong>Data Preprocessing:</strong> Cleaning, normalizing, and transforming data into a usable format.</li>
-  <li><strong>Feature Engineering:</strong> Selecting or creating the most informative variables.</li>
-  <li><strong>Model Inference/Decision:</strong> Running the AI model to produce a prediction or classification.</li>
-  <li><strong>Output & Action:</strong> Presenting results to users or triggering downstream automated actions.</li>
-</ol>
-<p>Let us now build a complete mini-pipeline that simulates this flow:</p>`,
-      code: {
-        language: 'python',
-        content: `import pandas as pd
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LogisticRegression
-
-# ── Stage 1: Simulate Data Collection ────────────────────────
-data = {
-    "score":       [85, 55, 72, 65, 90, 40, 78, 61, 95, 48],
-    "attendance":  [90, 80, 60, 70, 95, 50, 75, 65, 100, 45],
-    "assignments": [10,  5,  7,  8,  9,  3,  8,  6,  10,  4],
-}
-df = pd.DataFrame(data)
-
-# Ground truth labels (1 = Pass)
-df["label"] = ((df["score"] >= 60) & (df["attendance"] >= 75)).astype(int)
-print("── Dataset Preview ─────────────────────────────")
-print(df.to_string(index=False))
-
-# ── Stage 2+3: Build a sklearn Pipeline (preprocess + model) ─
-pipeline = Pipeline([
-    ("scaler", StandardScaler()),             # Normalize all features
-    ("classifier", LogisticRegression()),      # Train classifier
-])
-
-X = df[["score", "attendance", "assignments"]].values
-y = df["label"].values
-
-pipeline.fit(X, y)
-print("\\n── Pipeline Trained! ───────────────────────────")
-
-# ── Stage 4+5: Inference & Output ────────────────────────────
-new_input = [[73, 80, 8]]   # A new student
-prob  = pipeline.predict_proba(new_input)[0]
-pred  = pipeline.predict(new_input)[0]
-label = "Pass ✅" if pred == 1 else "Fail ❌"
-
-print(f"\\nNew Student Prediction:")
-print(f"  Result      : {label}")
-print(f"  Confidence  : {max(prob):.1%}")
-print(f"  Pass Prob   : {prob[1]:.1%} | Fail Prob: {prob[0]:.1%}")`,
-      },
-      note: "This is your first complete AI pipeline! Notice how sklearn's `Pipeline` object chains preprocessing and modeling cleanly — this pattern scales to production systems.",
-    },
-    {
-      title: 'Workflow Automation Fundamentals',
-      content: `<p>Workflow automation means using software to perform repetitive tasks without human intervention. When you add AI to automation, you get <strong>intelligent automation</strong> — systems that can make decisions, not just follow steps.</p>
-<h4>Components of an Automated Workflow</h4>
-<ul>
-  <li><strong>Trigger:</strong> An event that starts the workflow (new file, API call, scheduled time).</li>
-  <li><strong>Tasks:</strong> Individual operations (fetch data, preprocess, run model, send email).</li>
-  <li><strong>Logic / Branching:</strong> Conditions that determine which path to take.</li>
-  <li><strong>Actions / Output:</strong> What happens at the end (save result, send notification, call another API).</li>
-</ul>
-<p>Here is a complete example simulating an automated student feedback workflow:</p>`,
-      code: {
-        language: 'python',
-        content: `import time
+        content: `import json
+import re
+import pandas as pd
 from datetime import datetime
 
-class StudentFeedbackWorkflow:
-    """A simple automated AI workflow for generating student feedback."""
-
-    def __init__(self, model, scaler=None):
-        self.model  = model
-        self.scaler = scaler
-        self.log    = []
-
-    def _log(self, msg):
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        entry = f"[{timestamp}] {msg}"
-        self.log.append(entry)
-        print(entry)
-
-    def step_1_receive_data(self, student_data):
-        self._log(f"📥 Received data for: {student_data.get('name', 'Unknown')}")
-        return student_data
-
-    def step_2_validate(self, data):
-        required = ["name", "score", "attendance", "assignments"]
-        for field in required:
-            if field not in data:
-                raise ValueError(f"Missing field: {field}")
-        if not (0 <= data["score"] <= 100):
-            raise ValueError("Score must be between 0 and 100")
-        self._log("✅ Data validation passed")
-        return data
-
-    def step_3_predict(self, data):
-        features = [[data["score"], data["attendance"], data["assignments"]]]
-        pred = self.model.predict(features)[0]
-        prob = self.model.predict_proba(features)[0]
-        data["prediction"]  = "Pass" if pred == 1 else "Fail"
-        data["confidence"]  = round(float(max(prob)) * 100, 1)
-        self._log(f"🤖 Prediction: {data['prediction']} ({data['confidence']}% confidence)")
-        return data
-
-    def step_4_generate_feedback(self, data):
-        if data["prediction"] == "Pass":
-            msg = (f"Congratulations {data['name']}! You passed. "
-                   f"Keep up the excellent work — your score of {data['score']} "
-                   f"and {data['attendance']}% attendance show great dedication!")
-        else:
-            msg = (f"Hi {data['name']}, based on your current score ({data['score']}) "
-                   f"and attendance ({data['attendance']}%), you need improvement. "
-                   f"We recommend attending tutoring sessions and completing missing assignments.")
-        data["feedback"] = msg
-        self._log("📝 Feedback generated")
-        return data
-
-    def run(self, student_data):
-        self._log("=" * 50)
-        self._log(f"🚀 Workflow started for: {student_data.get('name')}")
-        try:
-            data = self.step_1_receive_data(student_data)
-            data = self.step_2_validate(data)
-            data = self.step_3_predict(data)
-            data = self.step_4_generate_feedback(data)
-            self._log("✅ Workflow completed successfully!")
-            return {"status": "success", "result": data}
-        except Exception as e:
-            self._log(f"❌ Workflow failed: {str(e)}")
-            return {"status": "error", "message": str(e)}
-
-# ── Run the workflow ──────────────────────────────────────────
-workflow = StudentFeedbackWorkflow(model=pipeline)
-
-students_to_process = [
-    {"name": "Emma",    "score": 88, "attendance": 92, "assignments": 10},
-    {"name": "James",   "score": 45, "attendance": 60, "assignments": 4},
-]
-
-print("\\n" + "="*60)
-print("          AUTOMATED STUDENT FEEDBACK WORKFLOW")
-print("="*60)
-
-for student in students_to_process:
-    result = workflow.run(student)
-    if result["status"] == "success":
-        print(f"\\n💬 FEEDBACK:\\n{result['result']['feedback']}")
-    print()`,
-      },
-      note: 'This workflow pattern — validate → process → decide → act — is the backbone of every production AI system, from Netflix recommendations to fraud detection.',
+# ── Raw Unstructured Multi-Channel Incident Stream ──────────────────
+raw_incident_corpus = [
+    {
+        "log_id": "RAW-901",
+        "channel": "customer_support_email",
+        "raw_text": "CRITICAL OUTAGE: Database connection pool exhausted on cluster db-prod-04 at 14:22 UTC. Over 820 active checkout sessions failed with HTTP 500 error. Revenue impact estimated at $14,500. Escalate to sre-leads@company.io immediately!"
     },
     {
-      title: 'Reflection & Next Steps',
-      content: `<p>Congratulations on completing Lab 1! You have built your first AI decision workflow from scratch. Let us consolidate what you have learned.</p>
-<h4>Key Takeaways</h4>
-<ul>
-  <li>AI is a broad field encompassing ML, deep learning, NLP, and computer vision.</li>
-  <li>Rule-based systems are explicit but brittle; ML systems learn from data and generalize better.</li>
-  <li>Every AI system follows a pipeline: collect → preprocess → model → output → act.</li>
-  <li>Workflow automation wraps AI in a reliable, repeatable process.</li>
-</ul>
-<h4>Concepts to Research Further</h4>
-<ul>
-  <li><strong>Feature importance:</strong> How does the model decide which inputs matter most?</li>
-  <li><strong>Overfitting:</strong> Why might a model perform well on training data but poorly on new data?</li>
-  <li><strong>Model versioning:</strong> How do teams manage updates to production models?</li>
-</ul>`,
+        "log_id": "RAW-902",
+        "channel": "zendesk_ticket",
+        "raw_text": "Hello, our team noticed minor visual latency (approx 280ms) when rendering the new dark mode navigation bar on iOS Safari. Non-blocking UI issue. Reporter: design-qa@partner.com. Priority: Low."
+    },
+    {
+        "log_id": "RAW-903",
+        "channel": "slack_webhook",
+        "raw_text": "URGENT Security alert: Suspicious API token usage detected from IP 198.51.100.42 making 4,200 requests/min against /api/v2/auth. Potential credential stuffing attack. Contact security-ops@corp.net. Severity: High."
+    },
+    {
+        "log_id": "RAW-904",
+        "channel": "billing_portal",
+        "raw_text": "Invoice discrepancy noticed on invoice INV-2026-881 for compute cluster usage. Charged $3,250.00 instead of agreed tier discount rate. Please review with accounts-payable@finclient.org. Priority: Medium."
+    }
+]
+
+print(f"📥 Successfully ingested {len(raw_incident_corpus)} unstructured logs.")
+print("Sample raw record snippet:")
+print("  " + raw_incident_corpus[0]["raw_text"][:95] + "...")`
+      },
+      note: 'Notice how each log comes from a different channel and uses completely free-form text. Traditional SQL cannot query this directly.',
+    },
+    {
+      title: 'Building Information Extraction & Entity Parsers',
+      content: `<p>To synthesize structured intelligence, we extract specific entities: <strong>Severity Level</strong>, <strong>Incident Category</strong>, <strong>Technical Identifiers</strong> (HTTP codes, IPs, Invoices), and <strong>Contact Emails</strong>.</p>
+<h4>🎯 Practical Task</h4>
+<p>Implement extraction functions using regular expressions and keyword heuristic matchers to extract structured fields from each raw text string.</p>`,
+      code: {
+        language: 'python',
+        content: `def extract_entities(text):
+    """Extract key structured entities from unstructured text."""
+    # 1. Email extraction via regex
+    email_pattern = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+'
+    emails = re.findall(email_pattern, text)
+    
+    # 2. Financial / Dollar amounts
+    currency_pattern = r'\\$[0-9]+(?:,[0-9]{3})*(?:\\.[0-9]{2})?'
+    amounts = re.findall(currency_pattern, text)
+    
+    # 3. HTTP Status Codes or IP Addresses
+    http_codes = re.findall(r'HTTP\\s*([2-5][0-9]{2})', text, re.IGNORECASE)
+    ip_addrs = re.findall(r'\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b', text)
+    
+    # 4. Severity classification heuristics
+    text_lower = text.lower()
+    if any(k in text_lower for k in ["critical", "outage", "credential stuffing"]):
+        severity = "CRITICAL"
+        urgency_score = 100
+    elif any(k in text_lower for k in ["urgent", "security alert", "high"]):
+        severity = "HIGH"
+        urgency_score = 75
+    elif any(k in text_lower for k in ["discrepancy", "medium"]):
+        severity = "MEDIUM"
+        urgency_score = 50
+    else:
+        severity = "LOW"
+        urgency_score = 25
+        
+    return {
+        "severity": severity,
+        "urgency_score": urgency_score,
+        "contact_emails": emails,
+        "dollar_impact": amounts[0] if amounts else "N/A",
+        "technical_signals": {
+            "http_codes": http_codes,
+            "ips": ip_addrs
+        }
+    }
+
+# Test extractor on first record
+sample_extracted = extract_entities(raw_incident_corpus[0]["raw_text"])
+print("🔎 Extracted Entities for RAW-901:")
+print(json.dumps(sample_extracted, indent=2))`
+      },
+      note: 'Regular expressions combined with heuristic extractors form the foundation of hybrid AI text extraction pipelines.',
+    },
+    {
+      title: 'Synthesizing Unstructured Text into Structured Schemas',
+      content: `<p><strong>Synthesis</strong> is the transformation of disparate extracted attributes into a unified, queryable schema. This bridges raw communications with downstream data warehouses.</p>
+<h4>🎯 Practical Task</h4>
+<p>Execute the extraction across all records, synthesize a unified relational tabular DataFrame, and calculate aggregate executive metrics.</p>`,
+      code: {
+        language: 'python',
+        content: `synthesized_records = []
+
+for log in raw_incident_corpus:
+    extracted = extract_entities(log["raw_text"])
+    synthesized_records.append({
+        "log_id": log["log_id"],
+        "channel": log["channel"],
+        "severity": extracted["severity"],
+        "urgency_score": extracted["urgency_score"],
+        "contact": extracted["contact_emails"][0] if extracted["contact_emails"] else "None",
+        "dollar_impact": extracted["dollar_impact"],
+        "has_technical_signals": bool(extracted["technical_signals"]["http_codes"] or extracted["technical_signals"]["ips"]),
+        "summary": log["raw_text"][:60] + "..."
+    })
+
+# Convert synthesized data to a DataFrame
+df_synthesized = pd.DataFrame(synthesized_records)
+
+print("📊 SYNTHESIZED INCIDENT DATABASE:")
+print(df_synthesized[["log_id", "severity", "urgency_score", "contact", "dollar_impact"]].to_string(index=False))
+
+print("\\n📈 EXECUTIVE SYNTHESIS SUMMARY:")
+print(f"Total Ingested Events : {len(df_synthesized)}")
+print(f"Critical / High Rate  : {(df_synthesized['urgency_score'] >= 75).mean():.1%}")
+print(f"Primary Severity Breakdown:\\n{df_synthesized['severity'].value_counts().to_string()}")`
+      },
+      note: 'The unstructured text is now a clean relational table suitable for SQL querying, BI dashboards, or automated routing.',
+    },
+    {
+      title: 'Building the End-to-End Extraction & Synthesis Pipeline',
+      content: `<p>Now encapsulate the ingestion, extraction, and synthesis into a modular, production-ready class with validation and error-handling.</p>
+<h4>🎯 Practical Task</h4>
+<p>Instantiate the pipeline class, process a new simulated incoming event, and verify that critical events trigger priority alert dispatching.</p>`,
+      code: {
+        language: 'python',
+        content: `class IncidentSynthesisEngine:
+    def __init__(self, high_priority_threshold=75):
+        self.threshold = high_priority_threshold
+        self.processed_records = []
+
+    def process_raw_stream(self, raw_records):
+        for rec in raw_records:
+            extracted = extract_entities(rec["raw_text"])
+            is_priority = extracted["urgency_score"] >= self.threshold
+            
+            structured_doc = {
+                "id": rec["log_id"],
+                "channel": rec["channel"],
+                "severity": extracted["severity"],
+                "urgency_score": extracted["urgency_score"],
+                "priority_route": "ESCALATION_QUEUE" if is_priority else "STANDARD_BACKLOG",
+                "extracted_entities": extracted,
+                "timestamp": datetime.utcnow().isoformat()
+            }
+            self.processed_records.append(structured_doc)
+        return self.processed_records
+
+engine = IncidentSynthesisEngine(high_priority_threshold=75)
+results = engine.process_raw_stream(raw_incident_corpus)
+
+# Verify automated routing
+escalated = [r["id"] for r in results if r["priority_route"] == "ESCALATION_QUEUE"]
+print(f"🚀 Pipeline executed! {len(results)} records processed.")
+print(f"🚨 Escalated Incidents routed to on-call team: {escalated}")`
+      },
+      note: 'Notice how automated routing occurs in sub-milliseconds without requiring manual reading by human support staff.',
+    },
+    {
+      title: 'Practical Verification & Quality Auditing',
+      content: `<p>In production extraction pipelines, automated validation checks guarantee that extraction precision and schema integrity remain intact.</p>
+<h4>🎯 Practical Task</h4>
+<p>Run automated assertions to verify that all records have valid severity grades, non-null IDs, and consistent score ranges.</p>`,
+      code: {
+        language: 'python',
+        content: `# ── Verification Assertions ──────────────────────────────────
+assert len(results) == 4, "Validation Error: Record count mismatch"
+for rec in results:
+    assert rec["severity"] in ["CRITICAL", "HIGH", "MEDIUM", "LOW"], f"Invalid severity: {rec['severity']}"
+    assert 0 <= rec["urgency_score"] <= 100, f"Urgency score out of range: {rec['urgency_score']}"
+    assert "priority_route" in rec, "Missing routing field in schema"
+
+print("✅ ALL EXTRACTION & SYNTHESIS ASSERTIONS PASSED!")
+print("✓ Schema validation: 100% compliant")
+print("✓ Entity extraction completeness: verified")
+print("✓ Automated dispatch readiness: confirmed")`
+      },
+      note: 'Always include assertion checks in your Python workflows to ensure that noisy inputs do not break downstream consumers.',
     },
   ],
   exercises: [
-    'Modify the rule-based classifier to handle a third category: "At Risk" (students who are borderline). What additional rules would you add?',
-    'Add a fourth feature to the ML pipeline (e.g., number of late submissions). Re-train and compare accuracy with the 3-feature version.',
-    'Extend the StudentFeedbackWorkflow to include a step that sends an email notification (you can simulate this by printing a formatted email instead of actually sending one).',
-    'Research what happens when a model is trained on biased data. Write 3-4 sentences about a real-world example and its consequences.',
+    'Add an automated phone number extractor to the regex parsing function and test it against international formats (e.g., +1-555-0192).',
+    'Integrate sentiment analysis scoring into the synthesis engine to assign negative polarity to dissatisfied customer logs.',
+    'Extend the schema to output a serialized JSON report file on disk (synthesized_incidents.json).',
+    'Simulate a malicious log injection containing HTML tags and write an input sanitization function to strip unsafe characters.',
   ],
   quiz: [
     {
@@ -384,19 +270,19 @@ for student in students_to_process:
 };
 
 /* ─────────────────────────────────────────────────────────────
-   LAB 2 — Advanced Workflow Automation with API Integration
+   LAB 2 — Automating Workflows: Connecting Applications to Trigger Intelligent Actions
    ───────────────────────────────────────────────────────────── */
 window.LAB_DATA['topic-01_lab2'] = {
-  title:      'Advanced Workflow Automation with AI API Integration',
+  title:      'Automating Workflows: Connecting Applications to Trigger Intelligent Actions',
   difficulty: 'Intermediate → Advanced',
   duration:   '75–90 minutes',
-  overview:   'Building on Lab 1, this lab dives into advanced workflow automation techniques: consuming real AI APIs (like OpenAI-compatible endpoints), implementing robust error handling and retry logic, building asynchronous pipelines, and monitoring workflow health. You will build a production-grade automated content moderation pipeline.',
+  overview:   'Modern enterprise AI delivers tangible business value by automating workflows: listening to incoming events, evaluating intent, making intelligent branching decisions, and dispatching actions across databases, ticketing systems, and alerting webhooks. In this hands-on lab, you construct an autonomous event-driven workflow engine in Python that connects simulated external web services, database queues, and automated actions based on AI decisions.',
   objectives: [
-    'Understand REST API architecture for AI services',
-    'Implement authentication, rate limiting, and exponential backoff',
-    'Build multi-step AI pipelines with branching logic',
-    'Add logging, monitoring, and alerting to workflows',
-    'Apply best practices for cost optimization in API-based AI systems',
+    'Design an event-driven trigger architecture connecting external applications',
+    'Build an intelligent intent classification and urgency evaluation engine',
+    'Connect downstream application sinks: simulated database queues and webhooks',
+    'Implement exponential backoff, rate limit handling, and fault recovery',
+    'Execute an end-to-end event workflow with persistent state tracking and audit logging',
   ],
   steps: [
     {

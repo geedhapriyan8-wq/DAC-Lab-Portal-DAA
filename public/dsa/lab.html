@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab | DSA Lab Portal</title>
+  <meta name="description" content="Interactive lab viewer for DSA Lab Portal AI and ML learning labs.">
+  <link rel="icon" type="image/png" href="../logo.png">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/lab.css">
+  <!-- Prism.js for syntax highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+  <link rel="stylesheet" href="../css/daa-theme.css">
+</head>
+<body class="theme-daa">
+  <div class="animated-bg"></div>
+  <div class="grid-overlay"></div>
+  <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
+  <div id="lab-overlay" class="sidebar-overlay"></div>
+
+  <div class="lab-layout">
+    <!-- ═══ LAB SIDEBAR ═══ -->
+    <aside id="lab-sidebar" class="lab-sidebar" role="complementary" aria-label="Lab navigation">
+      <div class="lab-sidebar-header">
+        <a href="dashboard.html" class="lab-back-btn" aria-label="Back to dashboard">← Dashboard</a>
+        <div class="lab-sidebar-topic" id="lab-sidebar-topic">Loading...</div>
+        <div class="lab-sidebar-title" id="lab-sidebar-title">Loading lab...</div>
+        <div class="lab-meta-row">
+          <span class="badge-chip badge-intermediate" id="lab-sidebar-difficulty"></span>
+          <span class="text-muted text-xs" id="lab-sidebar-duration"></span>
+        </div>
+      </div>
+
+      <!-- Steps navigation -->
+      <div class="lab-steps-nav">
+        <div class="steps-nav-title">Lab Navigation</div>
+        <div id="steps-nav">
+          <!-- Dynamically rendered by lab-viewer.js -->
+          <div style="color:var(--color-text-muted);font-size:0.8rem;padding:0.5rem">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Progress footer -->
+      <div class="lab-sidebar-footer">
+        <div class="lab-overall-progress-label">
+          <span>Lab Progress</span>
+          <span id="lab-progress-text">0%</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="lab-progress-fill" style="width:0%"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══ LAB MAIN CONTENT ═══ -->
+    <main class="lab-main" role="main">
+      <!-- Mobile hamburger -->
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem">
+        <button class="hamburger" id="lab-hamburger" aria-label="Open lab navigation" style="display:none">☰</button>
+      </div>
+
+      <!-- Breadcrumb -->
+      <nav class="lab-breadcrumb" aria-label="Breadcrumb">
+        <a href="dashboard.html">Dashboard</a>
+        <span class="lab-breadcrumb-sep" aria-hidden="true">›</span>
+        <span id="lab-breadcrumb-topic">Topic</span>
+        <span class="lab-breadcrumb-sep" aria-hidden="true">›</span>
+        <span class="lab-breadcrumb-current" id="lab-breadcrumb-lab">Lab</span>
+      </nav>
+
+      <!-- Lab Header -->
+      <header class="lab-header">
+        <h1 class="lab-title" id="lab-title">Loading...</h1>
+        <div class="lab-meta-chips">
+          <span class="lab-meta-chip">
+            <span class="icon">🎯</span>
+            <span id="lab-difficulty-chip" class="badge-chip badge-intermediate"></span>
+          </span>
+          <span class="lab-meta-chip">
+            <span id="lab-duration-chip"></span>
+          </span>
+          <span class="lab-meta-chip">
+            <span class="icon">📋</span>
+            <span id="lab-steps-count"></span>
+          </span>
+        </div>
+
+        <!-- Overview -->
+        <div class="glass-card lab-overview-card">
+          <div class="lab-overview-title">📌 Lab Overview</div>
+          <p class="lab-overview-text" id="lab-overview-text">Loading overview...</p>
+          <ul class="lab-objectives" id="lab-objectives-list">
+            <!-- Populated by lab-viewer.js -->
+          </ul>
+        </div>
+      </header>
+
+      <!-- Dynamic Step Content -->
+      <div id="steps-container">
+        <!-- Populated by lab-viewer.js -->
+        <div style="color:var(--color-text-muted);padding:2rem;text-align:center">
+          Loading lab content...
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/dsa/progress.js"></script>
+
+  <!-- Load all lab topic files -->
+  <script src="../js/dsa/labs/topic-01-ai-basics.js"></script>
+  <script src="../js/dsa/labs/topic-02-ai-ethics.js"></script>
+  <script src="../js/dsa/labs/topic-03-ml-pipeline.js"></script>
+  <script src="../js/dsa/labs/topic-04-neural-networks-scratch.js"></script>
+  <script src="../js/dsa/labs/topic-05-transfer-learning.js"></script>
+  <script src="../js/dsa/labs/topic-06-computer-vision.js"></script>
+  <script src="../js/dsa/labs/topic-07-cybersecurity.js"></script>
+  <script src="../js/dsa/labs/topic-08-nlp.js"></script>
+  <script src="../js/dsa/labs/topic-09-rag-pipeline.js"></script>
+  <script src="../js/dsa/labs/topic-10-ai-agents.js"></script>
+  <script src="../js/dsa/labs/topic-11-mlops-deployment.js"></script>
+  <script src="../js/dsa/labs/topic-11-multi-agents.js"></script>
+
+  <script src="../js/code-runner.js"></script>
+  <script src="../js/dsa/lab-viewer.js"></script>
+
+  <script>
+    // Show hamburger on mobile
+    if (window.innerWidth <= 900) {
+      document.getElementById('lab-hamburger').style.display = 'flex';
+    }
+    window.addEventListener('resize', () => {
+      const hb = document.getElementById('lab-hamburger');
+      if (hb) hb.style.display = window.innerWidth <= 900 ? 'flex' : 'none';
+    });
+  </script>
+</body>
+</html>

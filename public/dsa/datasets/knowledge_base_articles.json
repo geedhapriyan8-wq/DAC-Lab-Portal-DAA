@@ -1,0 +1,26 @@
+[
+  {
+    "doc_id": "KB-201",
+    "title": "Vector Indexing and Hybrid Search Architecture",
+    "category": "infrastructure",
+    "content": "Modern retrieval systems leverage hybrid search combining dense semantic vectors (using cosine distance on 1536-dimensional embeddings) and sparse BM25 lexical keyword matching. Dense retrieval captures semantic synonyms and conceptual relevance, while sparse search guarantees exact keyword matching for serial numbers, function names, and error codes. Reciprocal Rank Fusion (RRF) with constant k=60 is used to merge rankings from both indexes before reranking."
+  },
+  {
+    "doc_id": "KB-202",
+    "title": "Corrective Retrieval Augmented Generation (CRAG)",
+    "category": "rag_advanced",
+    "content": "Corrective RAG (CRAG) introduces a self-reflective evaluator to assess the quality of retrieved documents prior to LLM synthesis. The retrieval evaluator outputs a confidence score: Correct (score >= 0.70), Ambiguous (0.35 <= score < 0.70), or Incorrect (score < 0.35). If retrieval is Ambiguous or Incorrect, the query is rewritten and sent to a fallback search engine or knowledge graph to prevent hallucinations."
+  },
+  {
+    "doc_id": "KB-203",
+    "title": "ReAct Agent Loop: Reasoning and Action Execution",
+    "category": "agents",
+    "content": "The ReAct (Reasoning + Acting) paradigm coordinates LLM decision-making through cyclic iterations: Thought (reasoning through subgoals), Action (selecting a tool name), Action Input (providing structured arguments), and Observation (receiving tool output from the environment). The cycle terminates when the model issues the Final Answer action."
+  },
+  {
+    "doc_id": "KB-204",
+    "title": "Stateful Orchestration with LangGraph & MongoDB",
+    "category": "agents",
+    "content": "Production agent architectures require persistent state storage and cyclic execution graphs. LangGraph models workflows as StateGraphs where nodes are agent functions and edges define conditional routing. MongoDB Atlas provides document persistence for thread checkpoints, short-term conversational memory, and long-term vector search indices with cosine metric."
+  }
+]

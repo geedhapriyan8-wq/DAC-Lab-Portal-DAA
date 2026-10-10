@@ -58,17 +58,17 @@ async function initDashboard() {
     if (!container) return;
 
     const labTitles = {
-      'topic-01': ['Introduction to AI Concepts & Simple Workflows',           'Advanced Workflow Automation with API Integration'],
-      'topic-02': ['Identifying Bias and Fairness Issues in AI',                'Designing an Ethical AI Governance Framework with DAA'],
-      'topic-03': ['Building Your First ML Pipeline',                           'Advanced ML Pipeline: Feature Engineering & Tuning'],
-      'topic-04': ['Building a Perceptron and Deep Math Fundamentals',          'Deep Neural Networks, Backpropagation & Optimizers'],
-      'topic-05': ['Introduction to Transfer Learning, Foundation Models & Zero-Shot', 'Fine-Tuning Foundation Models & Tokenization Mechanics'],
-      'topic-06': ['Image Processing, Arrays, and OpenCV Fundamentals',         'Deep Computer Vision: Object Detection with PyTorch'],
-      'topic-07': ['Advanced Cryptography: Hashing, Salting, and Key Derivation', 'Differential Privacy & AI Data Security'],
-      'topic-08': ['Classical NLP: Cleaning, TF-IDF, and Sparse Representations', 'Dense Word Embeddings (Word2Vec) and Semantic Geometry'],
-      'topic-09': ['Building the Data Ingestion and Semantic Retrieval Pipeline', 'Prompt Engineering and LLM Generation for RAG'],
-      'topic-10': ['From Text Predictors to Agents: Building a ReAct Loop',     'Native Function Calling and Structured Tool APIs'],
-      'topic-11': ['Containerizing Machine Learning Models with Docker',        'CI/CD, Monitoring, and Model Drift (MLOps)'],
+      'topic-01': ['AI in Action: Unstructured Data Extraction & Synthesis', 'Automating Workflows: Connecting Applications to Trigger Intelligent Actions'],
+      'topic-02': ['Identifying Bias & Fairness Auditing in AI Datasets', 'Designing an Ethical AI Governance Framework'],
+      'topic-03': ['Building an End-to-End Pipeline (Titanic Dataset)', 'Automated CI/CD Simulation & Quality Deployment Gate'],
+      'topic-04': ['Constructing the Forward Architecture (From Scratch)', 'Training and Evaluating the Network (Backpropagation & Loss)'],
+      'topic-05': ['Image Classification via Feature Extraction (CNN Backbone)', 'End-to-End Fine-Tuning of a CNN (Layer Adaptation)'],
+      'topic-06': ['Building a Baseline Image Classifier (CNN & Augmentations)', 'Implementing Edge Detection & Basic Object Tracking (OpenCV)'],
+      'topic-07': ['Adversarial AI: Gradient Perturbation Attacks & Detection', 'Defensive AI: Guardrails, Prompt Injection Defense & Privacy'],
+      'topic-08': ['Sentiment Analysis with Transformers (Hugging Face Pipeline)', 'Building a Simple RAG Application (LangChain & Vector DB)'],
+      'topic-09': ['Building a Baseline RAG Pipeline (Chunking & Indexing)', 'Advanced RAG with CRAG and Reranking (Cross-Encoder)'],
+      'topic-10': ['Foundations (Microsoft AI Agents for Beginners & ReAct Loop)', 'Advanced Orchestration (MongoDB, Gemini & LangGraph)'],
+      'topic-11': ['Containerizing ML Inference APIs with Docker & FastAPI', 'Automated CI/CD Deployment & Production Monitoring'],
     };
 
     const durations = {

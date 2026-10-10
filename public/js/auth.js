@@ -12,7 +12,7 @@ const Auth = (() => {
      Only an admin can move a student to the other programme.
      `home` is relative to the site root. */
   const PROGRAMS = {
-    dsa: { name: 'DSA Lab Portal',                    home: 'dashboard.html' },
+    dsa: { name: 'DSA Lab Portal',                    home: 'dsa/dashboard.html' },
     daa: { name: 'Data Analytics Academy Lab Portal', home: 'daa/dashboard.html' },
   };
 

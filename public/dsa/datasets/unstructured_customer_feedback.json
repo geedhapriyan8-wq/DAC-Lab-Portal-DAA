@@ -1,0 +1,37 @@
+[
+  {
+    "id": "FB-1001",
+    "timestamp": "2026-03-01T10:14:22Z",
+    "channel": "email",
+    "raw_text": "URGENT: Our analytics pipeline failed at 09:30 UTC today. We are seeing error HTTP 504 Gateway Timeout on endpoint /api/v2/stream. Over 450 active users cannot generate their daily forecasts. Please contact devops@company.org or call +1-555-0192 immediately. Severity: CRITICAL.",
+    "customer": "Apex Enterprise"
+  },
+  {
+    "id": "FB-1002",
+    "timestamp": "2026-03-01T11:05:11Z",
+    "channel": "zendesk_ticket",
+    "raw_text": "Hey team, loving the new AI dashboard overall! Just wondering if you have an ETA on dark mode support for mobile browsers? Also noticed a small UI typo on the settings modal under billing. Keep up the great work!",
+    "customer": "Solaria Labs"
+  },
+  {
+    "id": "FB-1003",
+    "timestamp": "2026-03-01T11:42:00Z",
+    "channel": "slack_webhook",
+    "raw_text": "Billing issue alert: We noticed an unexpected charge of $1,420 on invoice INV-98441 for compute tier GPU-A100 instances that were stopped last Friday. Can we get this reconciled and credited back before month end? Contact finance-lead@quantumscale.io.",
+    "customer": "QuantumScale Tech"
+  },
+  {
+    "id": "FB-1004",
+    "timestamp": "2026-03-01T13:20:45Z",
+    "channel": "support_portal",
+    "raw_text": "Security incident query: Our CISO team needs the latest SOC2 Type II compliance audit packet and the penetration test report for the vector database clusters. Please route to sec-compliance@finbank.com within 48 hours for annual vendor review.",
+    "customer": "Global FinBank"
+  },
+  {
+    "id": "FB-1005",
+    "timestamp": "2026-03-01T14:15:30Z",
+    "channel": "email",
+    "raw_text": "System latency degradation: Query responses for our LangGraph agent workflow have increased from 350ms to 4.2 seconds during peak Asian market hours. Query ID batch #88291 seems to be getting throttled. High priority for our trading desk.",
+    "customer": "Apex Enterprise"
+  }
+]
