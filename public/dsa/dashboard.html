@@ -56,6 +56,10 @@
           Topics & Labs
           <span class="sidebar-nav-badge">11</span>
         </div>
+        <div class="sidebar-nav-item" data-section="datasets-section" role="button" tabindex="0">
+          <span class="sidebar-nav-icon">🗂️</span>
+          Datasets
+        </div>
         <div class="sidebar-nav-item" data-section="badges-section" role="button" tabindex="0">
           <span class="sidebar-nav-icon">🏅</span>
           My Badges
@@ -142,6 +146,19 @@
         </div>
       </section>
 
+      <!-- Datasets -->
+      <section id="datasets-section" style="margin-top:2.5rem" aria-label="Datasets">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">🗂️ Datasets</h2>
+            <p class="section-subtitle">Download a dataset for your practical exercises in VS Code or Google Colab. Each lab indicates when a dataset is required.</p>
+          </div>
+        </div>
+        <div class="glass-card" style="padding:1.25rem 1.5rem">
+          <div class="daa-resource-row" id="datasets-list"></div>
+        </div>
+      </section>
+
       <!-- Badges Gallery -->
       <section id="badges-section" class="badges-section" aria-label="Badge gallery">
         <div class="section-header">
@@ -200,6 +217,7 @@
 
   <script src="../js/auth.js"></script>
   <script src="../js/dsa/progress.js"></script>
+  <script src="../js/dsa/dsa-datasets.js"></script>
   <script src="../js/dsa/dashboard.js"></script>
 </body>
 </html>

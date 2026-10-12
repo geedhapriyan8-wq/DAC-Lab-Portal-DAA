@@ -130,6 +130,19 @@ async function initDashboard() {
     }).join('');
   }
 
+  /* ——— Render Datasets ——— */
+  function renderDatasets() {
+    const list = document.getElementById('datasets-list');
+    if (!list || typeof DSADatasets === 'undefined') return;
+    list.innerHTML = Object.keys(DSADatasets).map(key => {
+      const d = DSADatasets[key];
+      return `<div style="display:flex;flex-direction:column;gap:0.3rem">
+        ${dsaDatasetButton(key)}
+        <span class="text-muted" style="font-size:0.72rem;padding-left:0.2rem">${d.label} · ${d.usedIn}</span>
+      </div>`;
+    }).join('');
+  }
+
   /* ——— Render Badges Gallery ——— */
   function renderBadges() {
     const container = document.getElementById('badges-grid');
@@ -245,6 +258,7 @@ async function initDashboard() {
   /* ——— Initial Render ——— */
   renderStats();
   renderTopics();
+  renderDatasets();
   renderBadges();
 
   /* ——— Explicit Navigation Event Listener ——— */

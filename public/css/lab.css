@@ -782,3 +782,169 @@ code[class*="language-"] {
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
+/* ——— Terminal Session & Connectivity Enhancements ——— */
+.kernel-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.kernel-status-tag.root {
+  background: rgba(99, 102, 241, 0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+}
+.kernel-status-tag.connected {
+  background: rgba(16, 185, 129, 0.15);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.session-continuity-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.9rem;
+  background: rgba(15, 23, 42, 0.7);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+.session-continuity-banner.root-banner {
+  background: rgba(15, 23, 42, 0.45);
+}
+.continuity-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.continuity-icon {
+  font-size: 0.95rem;
+}
+.continuity-text strong {
+  color: var(--color-primary-light);
+}
+.continuity-text em {
+  font-style: normal;
+  color: #fde047;
+  font-weight: 600;
+}
+.continuity-badge {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm);
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.terminal-session-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.12);
+}
+.prompt-badge {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.15);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+.session-stamp {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+}
+.terminal-session-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 0.6rem;
+  padding-top: 0.35rem;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  font-size: 0.75rem;
+}
+.out-badge {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.15);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* Step Flow Pipeline Trail */
+.step-flow-trail {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0 1.25rem 0;
+  padding: 0.6rem 0.85rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-md);
+  font-size: 0.74rem;
+}
+.flow-trail-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.flow-trail-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text);
+}
+.flow-trail-item.active {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--color-primary-light);
+  font-weight: 700;
+  border: 1px solid rgba(99, 102, 241, 0.4);
+}
+.flow-trail-item.done {
+  color: #34d399;
+  background: rgba(16, 185, 129, 0.1);
+}
+.flow-trail-sep {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.7rem;
+}
+
+.btn-run-all-cells {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: rgba(99, 102, 241, 0.15);
+  color: #c7d2fe;
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  margin-left: auto;
+}
+.btn-run-all-cells:hover {
+  background: rgba(99, 102, 241, 0.3);
+  color: #fff;
+}
+
+

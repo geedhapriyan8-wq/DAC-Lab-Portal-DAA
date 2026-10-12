@@ -60,7 +60,7 @@ raw_incident_corpus = [
 
 print(f"📥 Successfully ingested {len(raw_incident_corpus)} unstructured logs.")
 print("Sample raw record snippet:")
-print("  " + raw_incident_corpus[0]["raw_text"][:95] + "...")`
+print("  " + raw_incident_corpus[0]["raw_text"][:149])`
       },
       note: 'Notice how each log comes from a different channel and uses completely free-form text. Traditional SQL cannot query this directly.',
     },

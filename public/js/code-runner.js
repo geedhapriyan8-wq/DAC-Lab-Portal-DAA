@@ -16,7 +16,7 @@ window.CodeRunner = (function() {
     return Math.abs(hash).toString(16).toUpperCase();
   }
 
-  // Simulated Python execution interpreter for lab code
+  // Simulated execution interpreter for lab code
   function execute(codeString, targetAssertion) {
     const logs = [];
     const startTime = performance.now();
@@ -25,34 +25,61 @@ window.CodeRunner = (function() {
     let errorMessage = null;
 
     try {
-      // Clean code for execution parsing
-      const printRegex = /print\s*\(([\s\S]*?)\)/g;
-      let match;
-      const printOutputs = [];
-
-      while ((match = printRegex.exec(codeString)) !== null) {
-        let content = match[1].trim();
-        // Handle quotes / f-strings formatting
-        if ((content.startsWith('"') && content.endsWith('"')) || (content.startsWith("'") && content.endsWith("'"))) {
-          content = content.slice(1, -1);
-        } else if (content.startsWith('f"') || content.startsWith("f'")) {
-          content = content.slice(2, -1);
-          content = content.replace(/\{([^}]+)\}/g, (m, p1) => {
-            if (p1.includes(':.') || p1.includes(':')) {
-              p1 = p1.split(':')[0];
-            }
-            return `[${p1.trim()}]`;
-          });
+      // 1. Check for shell / CLI commands
+      if (/^\s*(docker|curl|pip|git|python -m|uvicorn)\b/m.test(codeString)) {
+        const bashLines = codeString.split('\n');
+        for (const line of bashLines) {
+          const trimmed = line.trim();
+          if (trimmed.startsWith('# Expected') || trimmed.startsWith('# {"status"')) {
+            logs.push(trimmed.replace(/^#\s*(Expected.*?:\s*)?/, ''));
+          } else if (trimmed.startsWith('docker build')) {
+            logs.push('=> [internal] load build definition from Dockerfile');
+            logs.push('=> => naming to docker.io/library/ml-predictor-api:v1');
+          } else if (trimmed.startsWith('docker run')) {
+            logs.push('d8f149b5c2a0487b9264fa93bc67d3e6012891f7a01c8');
+          } else if (trimmed.startsWith('curl')) {
+            logs.push('{"status": "success", "prediction": 5.83, "model_version": "v1.0.3"}');
+          } else if (trimmed.startsWith('docker logs')) {
+            logs.push('[INFO] Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)');
+            logs.push('[INFO] Application startup complete.');
+          } else if (trimmed.startsWith('pip install')) {
+            logs.push(`Requirement already satisfied: ${trimmed.slice(12).split(' ')[0]} (cached)`);
+            logs.push('Successfully installed packages.');
+          }
         }
-        // Unescape internal escaped characters
-        content = content.replace(/\\n/g, '\n').replace(/\\t/g, '  ');
-        printOutputs.push(content);
-      }
-
-      if (printOutputs.length > 0) {
-        printOutputs.forEach(out => logs.push(out));
+        if (logs.length === 0) {
+          logs.push('✓ Command executed successfully with exit status 0.');
+        }
       } else {
-        logs.push('✓ Script executed cleanly (Exit code 0).');
+        // 2. Python parsing for print statements
+        const printRegex = /print\s*\(([\s\S]*?)\)/g;
+        let match;
+        const printOutputs = [];
+
+        while ((match = printRegex.exec(codeString)) !== null) {
+          let content = match[1].trim();
+          // Handle quotes / f-strings formatting
+          if ((content.startsWith('"') && content.endsWith('"')) || (content.startsWith("'") && content.endsWith("'"))) {
+            content = content.slice(1, -1);
+          } else if (content.startsWith('f"') || content.startsWith("f'")) {
+            content = content.slice(2, -1);
+            content = content.replace(/\{([^}]+)\}/g, (m, p1) => {
+              if (p1.includes(':.') || p1.includes(':')) {
+                p1 = p1.split(':')[0];
+              }
+              return `[${p1.trim()}]`;
+            });
+          }
+          // Unescape internal escaped characters
+          content = content.replace(/\\n/g, '\n').replace(/\\t/g, '  ');
+          printOutputs.push(content);
+        }
+
+        if (printOutputs.length > 0) {
+          printOutputs.forEach(out => logs.push(out));
+        } else {
+          logs.push('✓ Script executed cleanly (Exit code 0).');
+        }
       }
 
       // Assertion evaluation
