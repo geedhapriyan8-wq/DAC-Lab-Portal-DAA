@@ -76,7 +76,10 @@ window.CodeRunner = (function() {
         }
 
         if (printOutputs.length > 0) {
-          printOutputs.forEach(out => logs.push(out));
+          printOutputs.forEach(out => {
+            const splitLines = String(out).split('\n');
+            splitLines.forEach(l => logs.push(l));
+          });
         } else {
           logs.push('✓ Script executed cleanly (Exit code 0).');
         }

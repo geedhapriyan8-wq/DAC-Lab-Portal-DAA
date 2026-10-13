@@ -184,6 +184,7 @@ async function initLabViewer() {
         <h2 class="step-title-text">${step.title}</h2>
       </div>
       <div class="step-content">${step.content}</div>
+      ${renderTopic1InteractiveLogic(idx)}
       ${stepDatasets.length && typeof dsaDatasetButton === 'function' ? `<div class="daa-resource-row">${stepDatasets.map(dsaDatasetButton).join('')}</div>` : ''}
       ${codes.map((c, ci) => renderCodeBlock(c, `${idx}-${ci}`, idx, ci)).join('')}
       ${step.after ? `<div class="step-content">${step.after}</div>` : ''}
@@ -194,6 +195,9 @@ async function initLabViewer() {
         <button class="btn btn-primary" id="btn-next">${idx === TOTAL_STEPS - 1 ? 'Go to Knowledge Check →' : 'Next Step →'}</button>
       </div>`;
     stepsContainer.appendChild(el);
+
+    // Setup Topic 1 interactive logic workbench if on Topic 1
+    setupTopic1Workbench(el, idx);
 
     // Trail navigation clicks
     el.querySelectorAll('.flow-trail-item').forEach(item => {
@@ -317,6 +321,373 @@ async function initLabViewer() {
       </div>`;
   }
 
+  /* ——— Topic 1: Interactive Logic Visualizer & Simulator ——— */
+  function renderTopic1InteractiveLogic(stepIdx) {
+    if (topicId !== 'topic-01') return '';
+
+    if (labNum === 1) {
+      if (stepIdx === 0 || stepIdx === 1) {
+        return `
+          <div class="topic1-logic-workbench" id="t1-extractor-workbench">
+            <div class="workbench-badge">🧠 Interactive Logic Workbench</div>
+            <div class="workbench-title">Live Entity Extraction & Urgency Engine</div>
+            <div class="workbench-subtitle">
+              Understand the AI logic under the hood: select a sample message or edit the text below to watch how the extraction rules and urgency heuristics calculate decisions in real time!
+            </div>
+            <div class="workbench-presets-bar">
+              <span class="workbench-preset-label">Sample Presets:</span>
+              <button type="button" class="workbench-preset-pill active" data-preset="outage">🚨 Checkout Outage ($14,500)</button>
+              <button type="button" class="workbench-preset-pill" data-preset="security">🔒 Security Threat</button>
+              <button type="button" class="workbench-preset-pill" data-preset="billing">💳 Billing Query ($3,250)</button>
+              <button type="button" class="workbench-preset-pill" data-preset="ui">🎨 Minor UI Bug</button>
+            </div>
+            <textarea class="workbench-textarea" id="workbench-input-text" rows="3" placeholder="Type or paste any customer message...">CRITICAL OUTAGE: The online store checkout is completely down! Over 820 customer checkout orders failed with HTTP 500 error. Revenue impact estimated at $14,500. Escalate to sre-leads@company.io immediately!</textarea>
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+              <button type="button" class="workbench-btn-execute" id="btn-run-extraction-logic">⚡ Test Extraction Logic Live</button>
+              <span style="font-size:0.75rem;color:var(--color-text-muted)">Evaluates regex patterns, urgency scores & dispatch routing</span>
+            </div>
+            <div class="workbench-results-grid" id="workbench-output-area">
+              <div class="workbench-panel">
+                <div class="workbench-panel-title">🏷️ Extracted Entities</div>
+                <div class="entity-chips-wrap" id="workbench-entity-chips"></div>
+                <div class="workbench-panel-title" style="margin-top:0.75rem">📋 Structured JSON Schema</div>
+                <pre class="language-json" style="margin:0;max-height:160px;font-size:0.74rem;background:#060911"><code class="language-json" id="workbench-json-code"></code></pre>
+              </div>
+              <div class="workbench-panel">
+                <div class="workbench-panel-title">🔍 Step-by-Step Logic Trace</div>
+                <div id="workbench-logic-trace"></div>
+              </div>
+            </div>
+          </div>`;
+      } else if (stepIdx === 2 || stepIdx === 3) {
+        return `
+          <div class="topic1-logic-workbench" id="t1-triage-workbench">
+            <div class="workbench-badge">🎯 Decision Logic Explorer</div>
+            <div class="workbench-title">Automated Triage & Escalation Thresholds</div>
+            <div class="workbench-subtitle">
+              Learn how decision boundary thresholds divide incoming requests into on-call emergencies vs routine tickets. Drag the threshold slider to see how routing reacts!
+            </div>
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;padding:0.75rem;background:rgba(10,15,29,0.7);border-radius:8px">
+              <span style="font-size:0.8rem;font-weight:700;color:#c7d2fe">Escalation Threshold:</span>
+              <input type="range" id="threshold-slider" min="25" max="100" value="75" step="25" style="flex:1;cursor:pointer">
+              <span id="threshold-val-label" style="font-family:var(--font-mono);font-weight:700;color:#38bdf8;background:rgba(56,189,248,0.15);padding:0.2rem 0.5rem;border-radius:4px">75</span>
+            </div>
+            <div id="triage-table-preview"></div>
+          </div>`;
+      }
+    } else if (labNum === 2) {
+      return `
+        <div class="topic1-logic-workbench" id="t1-workflow-simulator">
+          <div class="workbench-badge">⚡ Interactive Workflow Simulator</div>
+          <div class="workbench-title">Experience the 3-Stage Automation: Trigger → Decision → Actions</div>
+          <div class="workbench-subtitle">
+            See how incoming events trigger intelligent decisions and multi-channel actions. Select an event trigger and watch the software execute the full automated lifecycle!
+          </div>
+          <div class="workbench-presets-bar">
+            <span class="workbench-preset-label">Trigger Event:</span>
+            <button type="button" class="workbench-preset-pill active" data-wf-event="outage">🚨 Payment Outage (Web Form)</button>
+            <button type="button" class="workbench-preset-pill" data-wf-event="billing">💳 Billing Question (Email)</button>
+            <button type="button" class="workbench-preset-pill" data-wf-event="feature">💡 Feature Request (Portal)</button>
+            <button type="button" class="workbench-preset-pill" data-wf-event="feedback">⭐ Positive Review (Web Form)</button>
+          </div>
+          <div class="workflow-pipeline-stepper">
+            <div class="workflow-stage-node active" id="wf-node-trigger">
+              <div class="stage-node-icon">📥</div>
+              <div class="stage-node-label">1. Trigger Event</div>
+              <div class="stage-node-sub" id="wf-sub-trigger">Web Form Ingested</div>
+            </div>
+            <span style="color:#6366f1;font-weight:700">→</span>
+            <div class="workflow-stage-node active" id="wf-node-decision">
+              <div class="stage-node-icon">🧠</div>
+              <div class="stage-node-label">2. Decision Logic</div>
+              <div class="stage-node-sub" id="wf-sub-decision">Evaluate Intent & Priority</div>
+            </div>
+            <span style="color:#6366f1;font-weight:700">→</span>
+            <div class="workflow-stage-node active" id="wf-node-action">
+              <div class="stage-node-icon">🚀</div>
+              <div class="stage-node-label">3. Multi-Actions</div>
+              <div class="stage-node-sub" id="wf-sub-action">Slack, Ticket & Email</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.85rem">
+            <button type="button" class="workbench-btn-execute" id="btn-run-workflow-sim">▶ Execute Automated Workflow</button>
+            <span style="font-size:0.75rem;color:#4ade80" id="wf-sim-status">✓ Ready to dispatch</span>
+          </div>
+          <div class="workflow-actions-grid" id="wf-actions-display"></div>
+        </div>`;
+    }
+    return '';
+  }
+
+  function setupTopic1Workbench(containerEl, stepIdx) {
+    if (topicId !== 'topic-01') return;
+
+    if (labNum === 1) {
+      if (stepIdx === 0 || stepIdx === 1) {
+        const presets = {
+          outage: "CRITICAL OUTAGE: The online store checkout is completely down! Over 820 customer checkout orders failed with HTTP 500 error. Revenue impact estimated at $14,500. Escalate to sre-leads@company.io immediately!",
+          security: "URGENT Security alert: Suspicious API token usage detected from IP 198.51.100.42 making 4,200 requests/min against /api/v2/auth. Potential credential stuffing attack. Contact security-ops@corp.net. Severity: High.",
+          billing: "Invoice discrepancy noticed on invoice INV-2026-881 for compute cluster usage. Charged $3,250.00 instead of agreed tier discount rate. Please review with accounts-payable@finclient.org. Priority: Medium.",
+          ui: "Hello, our team noticed minor visual latency (approx 280ms) when rendering the new dark mode navigation bar on iOS Safari. Non-blocking UI issue. Reporter: design-qa@partner.com. Priority: Low."
+        };
+
+        const textarea = containerEl.querySelector('#workbench-input-text');
+        const runBtn = containerEl.querySelector('#btn-run-extraction-logic');
+        const entityChips = containerEl.querySelector('#workbench-entity-chips');
+        const jsonCode = containerEl.querySelector('#workbench-json-code');
+        const logicTrace = containerEl.querySelector('#workbench-logic-trace');
+        const pills = containerEl.querySelectorAll('.workbench-preset-pill');
+
+        function runExtraction() {
+          if (!textarea) return;
+          const text = textarea.value.trim();
+          if (!text) return;
+
+          const emails = text.match(/[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+/g) || [];
+          const amounts = text.match(/\$[0-9]+(?:,[0-9]{3})*(?:\.[0-9]{2})?/g) || [];
+          const httpCodes = text.match(/HTTP\s*([2-5][0-9]{2})/gi) || [];
+          const ips = text.match(/\b(?:\d{1,3}\.){3}\d{1,3}\b/g) || [];
+
+          const lower = text.toLowerCase();
+          let severity = "LOW", score = 25, ruleText = 'No critical keywords detected';
+          if (/critical|outage|credential stuffing/.test(lower)) {
+            severity = "CRITICAL"; score = 100;
+            ruleText = 'Matched keywords ["critical" / "outage"]';
+          } else if (/urgent|security alert|high/.test(lower)) {
+            severity = "HIGH"; score = 75;
+            ruleText = 'Matched keywords ["urgent" / "security alert"]';
+          } else if (/discrepancy|medium|invoice/.test(lower)) {
+            severity = "MEDIUM"; score = 50;
+            ruleText = 'Matched keywords ["discrepancy" / "invoice"]';
+          }
+
+          const isEscalated = score >= 75;
+          const route = isEscalated ? "ESCALATION_QUEUE (On-Call Alert)" : "STANDARD_BACKLOG (Routine Queue)";
+
+          if (entityChips) {
+            entityChips.innerHTML = `
+              <div class="entity-chip">📧 ${emails[0] || 'No email found'}</div>
+              <div class="entity-chip money">💵 ${amounts[0] || 'No dollar amount'}</div>
+              <div class="entity-chip signal">⚠️ ${httpCodes[0] || (ips[0] ? ips[0] : 'No error code')}</div>
+              <div class="entity-chip" style="background:rgba(168,85,247,0.15);color:#c084fc;border-color:rgba(168,85,247,0.3)">
+                🎯 Urgency: ${score}/100 (${severity})
+              </div>`;
+          }
+
+          if (logicTrace) {
+            logicTrace.innerHTML = `
+              <div class="logic-step-row">
+                <span class="logic-step-num">1.</span>
+                <span class="logic-step-desc"><strong>Email Regex:</strong> ${emails.length ? `Extracted <code>${escapeHtml(emails[0])}</code>` : 'No email pattern match'}</span>
+              </div>
+              <div class="logic-step-row">
+                <span class="logic-step-num">2.</span>
+                <span class="logic-step-desc"><strong>Financial Regex:</strong> ${amounts.length ? `Detected amount <code>${escapeHtml(amounts[0])}</code>` : 'No currency detected'}</span>
+              </div>
+              <div class="logic-step-row">
+                <span class="logic-step-num">3.</span>
+                <span class="logic-step-desc"><strong>Urgency Scoring:</strong> ${ruleText} → Score <strong>${score}</strong> <span class="logic-step-badge logic-badge-${severity.toLowerCase()}">${severity}</span></span>
+              </div>
+              <div class="logic-step-row">
+                <span class="logic-step-num">4.</span>
+                <span class="logic-step-desc"><strong>Decision Boundary:</strong> Score ${score} ${isEscalated ? '≥' : '<'} 75 Threshold → Route: <strong style="color:${isEscalated ? '#f87171' : '#4ade80'}">${route}</strong></span>
+              </div>`;
+          }
+
+          const schema = {
+            severity: severity,
+            urgency_score: score,
+            priority_route: isEscalated ? "ESCALATION_QUEUE" : "STANDARD_BACKLOG",
+            contact_emails: emails,
+            dollar_impact: amounts[0] || "N/A",
+            technical_signals: {
+              http_codes: httpCodes.map(c => c.replace(/HTTP\s*/i, '')),
+              ips: ips
+            }
+          };
+
+          if (jsonCode) {
+            jsonCode.textContent = JSON.stringify(schema, null, 2);
+          }
+        }
+
+        pills.forEach(pill => {
+          pill.addEventListener('click', () => {
+            pills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            const key = pill.dataset.preset;
+            if (presets[key] && textarea) {
+              textarea.value = presets[key];
+              runExtraction();
+            }
+          });
+        });
+
+        if (runBtn) {
+          runBtn.addEventListener('click', runExtraction);
+        }
+
+        runExtraction();
+      } else if (stepIdx === 2 || stepIdx === 3) {
+        const slider = containerEl.querySelector('#threshold-slider');
+        const valLabel = containerEl.querySelector('#threshold-val-label');
+        const tablePreview = containerEl.querySelector('#triage-table-preview');
+
+        const sampleRows = [
+          { id: 'RAW-901', channel: 'Email', urgency: 100, severity: 'CRITICAL', contact: 'sre-leads@company.io', impact: '$14,500' },
+          { id: 'RAW-903', channel: 'Slack', urgency: 75, severity: 'HIGH', contact: 'security-ops@corp.net', impact: 'N/A' },
+          { id: 'RAW-904', channel: 'Portal', urgency: 50, severity: 'MEDIUM', contact: 'accounts-payable@finclient.org', impact: '$3,250.00' },
+          { id: 'RAW-902', channel: 'Zendesk', urgency: 25, severity: 'LOW', contact: 'design-qa@partner.com', impact: 'N/A' }
+        ];
+
+        function renderTriageTable(thresh) {
+          if (!tablePreview) return;
+          tablePreview.innerHTML = `
+            <div style="overflow-x:auto">
+              <table style="width:100%;font-size:0.78rem;border-collapse:collapse;color:#e2e8f0;background:rgba(10,15,29,0.5);border-radius:6px">
+                <thead>
+                  <tr style="border-bottom:1px solid rgba(255,255,255,0.1);text-align:left;color:#94a3b8">
+                    <th style="padding:0.4rem 0.6rem">ID</th>
+                    <th style="padding:0.4rem 0.6rem">Severity</th>
+                    <th style="padding:0.4rem 0.6rem">Score</th>
+                    <th style="padding:0.4rem 0.6rem">Contact</th>
+                    <th style="padding:0.4rem 0.6rem">Impact</th>
+                    <th style="padding:0.4rem 0.6rem">Automated Destination</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${sampleRows.map(r => {
+                    const isEsc = r.urgency >= thresh;
+                    return `
+                      <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+                        <td style="padding:0.4rem 0.6rem;font-family:var(--font-mono)">${r.id}</td>
+                        <td style="padding:0.4rem 0.6rem"><span class="logic-step-badge logic-badge-${r.severity.toLowerCase()}">${r.severity}</span></td>
+                        <td style="padding:0.4rem 0.6rem;font-family:var(--font-mono);font-weight:700">${r.urgency}</td>
+                        <td style="padding:0.4rem 0.6rem">${r.contact}</td>
+                        <td style="padding:0.4rem 0.6rem;color:#34d399">${r.impact}</td>
+                        <td style="padding:0.4rem 0.6rem">
+                          <span style="font-weight:700;padding:0.15rem 0.5rem;border-radius:4px;font-size:0.72rem;background:${isEsc ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)'};color:${isEsc ? '#f87171' : '#4ade80'};border:1px solid ${isEsc ? 'rgba(239,68,68,0.3)' : 'rgba(16,185,129,0.3)'}">
+                            ${isEsc ? '🚨 ESCALATION_QUEUE (On-Call)' : '📋 STANDARD_BACKLOG (Routine)'}
+                          </span>
+                        </td>
+                      </tr>`;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>`;
+        }
+
+        if (slider) {
+          slider.addEventListener('input', () => {
+            const val = parseInt(slider.value);
+            if (valLabel) valLabel.textContent = val;
+            renderTriageTable(val);
+          });
+        }
+        renderTriageTable(75);
+      }
+    } else if (labNum === 2) {
+      const wfEvents = {
+        outage: {
+          id: "EVT-101",
+          channel: "Web Form",
+          sender: "sarah.chen@techcorp.com",
+          subject: "System Down: Payment Gateway Error 500",
+          category: "INCIDENT",
+          priority: "CRITICAL",
+          rule: "Matched 'System Down' & 'Error 500'",
+          actions: [
+            { icon: "📢", title: "Slack Webhook Alert", target: "#incident-alerts", content: "🚨 CRITICAL: System Down: Payment Gateway Error 500 from sarah.chen@techcorp.com" },
+            { icon: "🎫", title: "Support Ticket Created", target: "Queue: SRE-Critical", content: "Ticket TICK-1001 assigned with Priority P1-CRITICAL" },
+            { icon: "✉️", title: "Automated Customer Email", target: "To: sarah.chen@techcorp.com", content: "Subject: 'We are investigating your issue immediately'" }
+          ]
+        },
+        billing: {
+          id: "EVT-102",
+          channel: "Email",
+          sender: "billing-inquiries@partner.org",
+          subject: "Invoice Question for October",
+          category: "BILLING",
+          priority: "MEDIUM",
+          rule: "Matched 'Invoice' & 'Charges'",
+          actions: [
+            { icon: "🎫", title: "Finance Queue Ticket", target: "Queue: Finance-Billing", content: "Ticket TICK-1002 filed with Priority P2-MEDIUM" },
+            { icon: "✉️", title: "Acknowledgement Email", target: "To: billing-inquiries@partner.org", content: "Subject: 'Billing Inquiry Received - assigned to finance'" }
+          ]
+        },
+        feature: {
+          id: "EVT-103",
+          channel: "Customer Portal",
+          sender: "alex.m@startup.io",
+          subject: "Feature Request: Export to CSV",
+          category: "PRODUCT_FEEDBACK",
+          priority: "LOW",
+          rule: "Matched 'Feature Request' & 'CSV'",
+          actions: [
+            { icon: "🎫", title: "Product Backlog Ticket", target: "Queue: Product-Feedback", content: "Ticket TICK-1003 created with Priority P3-LOW" },
+            { icon: "✉️", title: "Thank You Email", target: "To: alex.m@startup.io", content: "Subject: 'Thank you for your feature suggestion!'" }
+          ]
+        },
+        feedback: {
+          id: "EVT-104",
+          channel: "Web Form",
+          sender: "linda.k@enterprise.net",
+          subject: "Great onboarding experience!",
+          category: "GENERAL_INQUIRY",
+          priority: "LOW",
+          rule: "Routine positive comment",
+          actions: [
+            { icon: "✉️", title: "Appreciation Email", target: "To: linda.k@enterprise.net", content: "Subject: 'Thank you for contacting us - we appreciate your kind words!'" }
+          ]
+        }
+      };
+
+      let activeKey = 'outage';
+      const pills = containerEl.querySelectorAll('.workbench-preset-pill');
+      const runBtn = containerEl.querySelector('#btn-run-workflow-sim');
+      const subTrigger = containerEl.querySelector('#wf-sub-trigger');
+      const subDecision = containerEl.querySelector('#wf-sub-decision');
+      const actionsDisplay = containerEl.querySelector('#wf-actions-display');
+      const simStatus = containerEl.querySelector('#wf-sim-status');
+
+      function executeWorkflow(key) {
+        const evt = wfEvents[key];
+        if (!evt) return;
+
+        if (subTrigger) subTrigger.textContent = `${evt.channel} (${evt.id})`;
+        if (subDecision) subDecision.textContent = `[${evt.category}] Priority: ${evt.priority}`;
+        if (simStatus) simStatus.innerHTML = `✓ Dispatched ${evt.actions.length} automated actions in 0.03s`;
+
+        if (actionsDisplay) {
+          actionsDisplay.innerHTML = evt.actions.map(act => `
+            <div class="workflow-action-card">
+              <div class="action-card-header">
+                <span>${act.icon}</span> <span>${act.title}</span>
+              </div>
+              <div style="font-size:0.7rem;color:#818cf8;margin-bottom:0.25rem">${act.target}</div>
+              <div class="action-card-content">${escapeHtml(act.content)}</div>
+            </div>
+          `).join('');
+        }
+      }
+
+      pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          pills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+          activeKey = pill.dataset.wfEvent;
+          executeWorkflow(activeKey);
+        });
+      });
+
+      if (runBtn) {
+        runBtn.addEventListener('click', () => executeWorkflow(activeKey));
+      }
+
+      executeWorkflow('outage');
+    }
+  }
+
   function runCode(wrapEl, stepIdx) {
     const code = codeRegistry[wrapEl.id];
     const runBtn = wrapEl.querySelector('.btn-run-code');
@@ -334,8 +705,8 @@ async function initLabViewer() {
         duration = '0.38s';
       } else {
         const res = CodeRunner.execute(code.content);
-        lines = res.logs;
-        duration = res.duration;
+        lines = (res.logs || []).flatMap(l => String(l).split('\n'));
+        duration = res.duration || '0.25s';
       }
       lastOutputLog = lines.join('\n');
 
@@ -344,7 +715,7 @@ async function initLabViewer() {
           <span class="prompt-badge">In [${cellNum}]</span>
           <span class="session-stamp">Python 3.10 · Shared Kernel</span>
         </div>` +
-        lines.map(line => `<div class="terminal-log-line">${escapeHtml(line)}</div>`).join('') +
+        lines.map(line => `<div class="terminal-log-line">${line ? escapeHtml(line) : '&nbsp;'}</div>`).join('') +
         (code.images || []).map(src =>
           `<img src="${src}" alt="Output figure" loading="lazy" style="display:block;max-width:100%;margin:0.6rem 0;border-radius:8px;background:#fff">`).join('') +
         `<div class="terminal-session-footer">
@@ -353,16 +724,25 @@ async function initLabViewer() {
         </div>`;
 
       termEl.innerHTML = renderedHtml;
+      termEl.scrollTop = termEl.scrollHeight;
       executedStates[wrapEl.id] = { html: renderedHtml, log: lastOutputLog };
 
-      badge.className = 'verification-status-badge passed';
-      badge.innerHTML = `✓ Cell [${cellNum}] Executed & Synced`;
+      if (badge) {
+        badge.className = 'verification-status-badge passed';
+        badge.innerHTML = `✓ Cell [${cellNum}] Executed & Synced`;
+      }
       runBtn.textContent = `✓ Re-run Cell [${cellNum}]`;
       runBtn.disabled = false;
 
       if (stepIdx !== undefined) {
         doneSteps.add(stepIdx);
         renderSteps();
+        const trailItem = document.querySelector(`.flow-trail-item[data-step="${stepIdx}"]`);
+        if (trailItem) {
+          trailItem.classList.add('done');
+          const span = trailItem.querySelector('span');
+          if (span) span.textContent = '✓';
+        }
       }
     }, 280);
   }

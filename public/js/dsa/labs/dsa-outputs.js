@@ -2,7 +2,7 @@
 window.DSA_OUTPUTS = {
  "topic-01_lab1": [
   {
-   "text": "📥 Successfully ingested 4 unstructured logs.\nSample raw record snippet:\n  CRITICAL OUTAGE: Database connection pool exhausted on cluster db-prod-04 at 14:22 UTC. Over 820 a..."
+   "text": "📥 Successfully ingested 4 unstructured logs.\nSample raw record snippet:\n  CRITICAL OUTAGE: The online store checkout is completely down! Over 820 customer checkout orders failed with HTTP 500 error. Revenue impact estimated at $14,500. Escalate to sre-leads@company.io immediately!"
   },
   {
    "text": "🔎 Extracted Entities for RAW-901:\n{\n  \"severity\": \"CRITICAL\",\n  \"urgency_score\": 100,\n  \"contact_emails\": [\n    \"sre-leads@company.io\"\n  ],\n  \"dollar_impact\": \"$14,500\",\n  \"technical_signals\": {\n    \"http_codes\": [\n      \"500\"\n    ],\n    \"ips\": []\n  }\n}"
@@ -19,22 +19,19 @@ window.DSA_OUTPUTS = {
  ],
  "topic-01_lab2": [
   {
-   "text": "Payload size: 312 bytes\nSignature: a7f89b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcd\n✓ Verified: Webhook payload authentic and uncorrupted."
+   "text": "⚡ Ingested 4 incoming workflow trigger events.\n  • [EVT-101] from web_form: System Down: Payment Gateway Error 500\n  • [EVT-102] from email: Invoice Question for October\n  • [EVT-103] from customer_portal: Feature Request: Export to CSV\n  • [EVT-104] from web_form: Great onboarding experience!"
   },
   {
-   "text": "Attempt 1: 503 Service Unavailable — backing off 1.00s...\nAttempt 2: 503 Service Unavailable — backing off 2.00s...\nAttempt 3: 200 OK (latency: 142ms)\nResponse: {\"status\": \"received\", \"event_id\": \"EVT-2026-9901\"}"
+   "text": "🧠 Intelligent Intent Classification Results:\n  • EVT-101: [INCIDENT] Priority=CRITICAL -> Action=EMERGENCY_DISPATCH\n  • EVT-102: [BILLING] Priority=MEDIUM -> Action=ROUTE_FINANCE\n  • EVT-103: [PRODUCT_FEEDBACK] Priority=LOW -> Action=LOG_BACKLOG\n  • EVT-104: [GENERAL_INQUIRY] Priority=LOW -> Action=AUTO_ACKNOWLEDGE"
   },
   {
-   "text": "Content Moderation Pipeline Execution:\n• Input: 'Hey team, please review attached budget spreadsheet for Q3.'\n  Profanity Check : PASS (score: 0.00)\n  PII Extraction  : 0 items detected\n  Sentiment Polarity: Neutral (+0.05)\n  Final Decision  : APPROVED (auto-routed to Slack #finance)"
+   "text": "🔧 Action Dispatchers initialized:\n  ✓ Slack Webhook connector ready\n  ✓ Automated Email service ready\n  ✓ Support Ticketing database ready"
   },
   {
-   "text": "Parallel Batch Worker Pool (4 workers):\nProcessed 25 queued events in 0.384s (65.1 events/sec)\nFailures: 0 | Retries: 1 | Dead Letter Queue: 0"
+   "text": "🔄 Executing Workflow for EVT-101 (System Down: Payment Gateway Error 500):\n  📢 [Slack #incident-alerts] 🚨 CRITICAL: System Down: Payment Gateway Error 500 from sarah.chen@techcorp.com\n  🎫 [Ticket TICK-1001] Created in 'SRE-Critical' queue with Priority P1-CRITICAL\n  ✉️  [Email to sarah.chen@techcorp.com] Subject: 'We are investigating your issue immediately'\n\n🔄 Executing Workflow for EVT-102 (Invoice Question for October):\n  🎫 [Ticket TICK-1002] Created in 'Finance-Billing' queue with Priority P2-MEDIUM\n  ✉️  [Email to billing-inquiries@partner.org] Subject: 'Billing Inquiry Received'\n\n🔄 Executing Workflow for EVT-103 (Feature Request: Export to CSV):\n  🎫 [Ticket TICK-1003] Created in 'Product-Feedback' queue with Priority P3-LOW\n  ✉️  [Email to alex.m@startup.io] Subject: 'Thank you for your feature suggestion!'\n\n🔄 Executing Workflow for EVT-104 (Great onboarding experience!):\n  ✉️  [Email to linda.k@enterprise.net] Subject: 'Thank you for contacting us!'\n\n🚀 Workflow Run Completed: 4 events fully automated!"
   },
   {
-   "text": "[INFO] 2026-10-12 11:20:00 - Dispatch worker-01 active\n[METRIC] queue_depth=0 avg_latency_ms=48.2 error_rate=0.00%\n[ALERT] No anomalies detected. System SLA healthy at 99.98%."
-  },
-  {
-   "text": "Cost & Throughput Analysis:\nBatching 100 calls -> reduced API invocations by 84%\nMonthly estimated cost savings: $412.50\nEnd-to-end automation workflow verified."
+   "text": "✅ ALL WORKFLOW AUTOMATION ASSERTIONS PASSED!\n✓ Trigger-to-Action pipeline integrity: verified\n✓ Intelligent branching logic: 100% accurate\n✓ Audit log dispatch trail: confirmed\n\n=======================================================\n         WORKFLOW AUTOMATION ROI REPORT\n=======================================================\nEvents Processed in Batch     : 4\nActions Executed Automatically: 7\nManual Triage Time Saved (Now): 48 minutes\nProjected Weekly Time Saved   : 50.0 hours/week\nAutomation Success Rate       : 100.0%\n======================================================="
   }
  ],
  "topic-02_lab1": [

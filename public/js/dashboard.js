@@ -72,7 +72,7 @@ async function initDashboard() {
     };
 
     const durations = {
-      'topic-01': ['45 min', '75 min'],
+      'topic-01': ['45 min', '45 min'],
       'topic-02': ['50 min', '80 min'],
       'topic-03': ['60 min', '90 min'],
       'topic-04': ['90 min', '120 min'],

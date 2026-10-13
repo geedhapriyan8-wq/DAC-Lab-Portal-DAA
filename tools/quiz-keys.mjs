@@ -24,7 +24,8 @@ function scriptsOf(page) {
   return [...html.matchAll(/<script src="([^"]*\/labs\/(?:topic|daa)-\d{2}-[^"]+\.js)"/g)]
     .map(m => path.resolve(dir, m[1]));
 }
-const files = [...scriptsOf('lab.html'), ...scriptsOf('daa/lab.html')];
+const files = [...scriptsOf('dsa/lab.html'), ...scriptsOf('daa/lab.html')];
+
 
 // Finds each `quiz: [ ... ]` in real code (not inside strings or comments)
 // and returns its bracket span plus the lab key it belongs to.

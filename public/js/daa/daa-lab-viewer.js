@@ -216,7 +216,7 @@ async function initDaaLabViewer() {
       lastOutputLog = lines.join('\n');
 
       termEl.innerHTML = lines.map(line =>
-        `<div class="terminal-log-line">${escapeHtml(line)}</div>`).join('') +
+        `<div class="terminal-log-line">${line ? escapeHtml(line) : '&nbsp;'}</div>`).join('') +
         (code.images || []).map(src =>
           `<img src="${src}" alt="Chart produced by this cell" loading="lazy" style="display:block;max-width:100%;margin:0.6rem 0;border-radius:8px;background:#fff">`).join('') +
         `<div class="terminal-log-line" style="color:#4ade80;margin-top:0.4rem">✓ Cell finished in ${duration}</div>`;
